@@ -430,7 +430,7 @@ async function exportToPDF() {
         doc.setPage(pageCount);
         doc.setTextColor(...mediumGray);
         doc.setFontSize(8);
-        doc.text('© 2024 Purdue University. AI Use Case Catalog', margin, 287);
+        doc.text('© 2024 Purdue University Global. AI Use Case Catalog', margin, 287);
         doc.text(`Generated: ${new Date().toLocaleDateString()}`, pageWidth - margin - 40, 287);
 
         // Save the PDF

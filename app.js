@@ -1,5 +1,6 @@
 // Global use cases array
 let useCases = [];
+let currentlyDisplayedUseCases = [];
 
 // Load use cases from Firebase
 async function loadUseCases() {
@@ -27,6 +28,9 @@ async function loadUseCases() {
 function displayUseCases(cases) {
     const grid = document.getElementById('use-cases-grid');
     const noResults = document.getElementById('no-results');
+
+    // Store currently displayed cases for PDF export
+    currentlyDisplayedUseCases = cases;
 
     if (cases.length === 0) {
         grid.style.display = 'none';
@@ -133,6 +137,290 @@ function resetFilters() {
     filterUseCases();
 }
 
+// Helper function to convert image URL to base64
+async function getImageAsBase64(imageUrl) {
+    try {
+        const response = await fetch(imageUrl);
+        const blob = await response.blob();
+
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        });
+    } catch (error) {
+        console.error('Error loading image:', error);
+        return null;
+    }
+}
+
+// Helper function to get image dimensions
+function getImageDimensions(base64) {
+    return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+            resolve({ width: img.width, height: img.height });
+        };
+        img.onerror = () => {
+            resolve({ width: 800, height: 600 }); // Default
+        };
+        img.src = base64;
+    });
+}
+
+// Export currently filtered/sorted use cases to PDF
+async function exportFilteredToPDF() {
+    if (!currentlyDisplayedUseCases || currentlyDisplayedUseCases.length === 0) {
+        alert('No use cases to export.');
+        return;
+    }
+
+    const button = document.getElementById('export-filtered-pdf-btn');
+    const originalText = button.textContent;
+    button.disabled = true;
+    button.textContent = `⏳ Generating PDF (0/${currentlyDisplayedUseCases.length})...`;
+
+    try {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({
+            orientation: 'portrait',
+            unit: 'mm',
+            format: 'a4'
+        });
+
+        // Purdue Colors
+        const campusGold = [194, 142, 14];
+        const athleticGold = [206, 184, 136];
+        const black = [0, 0, 0];
+        const darkGray = [51, 51, 51];
+        const mediumGray = [102, 102, 102];
+        const lightGray = [153, 153, 153];
+        const white = [255, 255, 255];
+
+        const pageWidth = 210;
+        const margin = 20;
+        const contentWidth = pageWidth - (margin * 2);
+
+        // Helper function to add section
+        const addSection = (title, content, isPlaceholder = false) => {
+            let yPosition = doc.internal.getCurrentPageInfo().pageNumber > 1
+                ? doc.lastAutoTable?.finalY || 20
+                : doc.internal.pageSize.getHeight();
+
+            // Get current Y position from the last content
+            const pages = doc.internal.pages;
+            const currentPage = doc.internal.getCurrentPageInfo().pageNumber;
+
+            // Check if we need a new page
+            if (doc.lastYPosition && doc.lastYPosition > 270) {
+                doc.addPage();
+                doc.lastYPosition = 20;
+            }
+
+            if (!doc.lastYPosition) {
+                doc.lastYPosition = 20;
+            }
+
+            // Section title with light gray background
+            doc.setFillColor(245, 245, 245);
+            doc.rect(margin - 2, doc.lastYPosition - 5, contentWidth + 4, 8, 'F');
+
+            doc.setTextColor(...darkGray);
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'bold');
+            doc.text(title, margin, doc.lastYPosition);
+            doc.lastYPosition += 8;
+
+            // Section content
+            if (isPlaceholder) {
+                doc.setTextColor(...lightGray);
+                doc.setFont('helvetica', 'italic');
+            } else {
+                doc.setTextColor(...black);
+                doc.setFont('helvetica', 'normal');
+            }
+            doc.setFontSize(10);
+
+            const lines = doc.splitTextToSize(content, contentWidth);
+            doc.text(lines, margin, doc.lastYPosition);
+            doc.lastYPosition += (lines.length * 5) + 7;
+        };
+
+        // Helper to check content
+        const getContent = (sections, field, placeholder) => {
+            const content = sections?.[field] || '';
+            if (content.trim()) {
+                return { text: content, isPlaceholder: false };
+            }
+            return { text: placeholder, isPlaceholder: true };
+        };
+
+        // Process each use case
+        for (let i = 0; i < currentlyDisplayedUseCases.length; i++) {
+            const useCase = currentlyDisplayedUseCases[i];
+
+            // Update progress
+            button.textContent = `⏳ Generating PDF (${i + 1}/${currentlyDisplayedUseCases.length})...`;
+
+            // Add page break between use cases (except for the first one)
+            if (i > 0) {
+                doc.addPage();
+            }
+
+            doc.lastYPosition = 20;
+
+            // Header - BLACK background with white text
+            doc.setFillColor(...black);
+            doc.rect(0, 0, pageWidth, 20, 'F');
+            doc.setTextColor(...white);
+            doc.setFontSize(18);
+            doc.setFont('helvetica', 'bold');
+            doc.text(useCase.title, margin, 12);
+
+            doc.lastYPosition = 28;
+
+            // Meta information - Colored badges
+            const toolName = getToolName(useCase.ai_tool);
+            const forUseBy = Array.isArray(useCase.for_use_by)
+                ? useCase.for_use_by.join(', ')
+                : (useCase.for_use_by || 'General');
+
+            // Tool badge (Campus Gold background)
+            doc.setFillColor(...campusGold);
+            doc.roundedRect(margin, doc.lastYPosition, 35, 7, 2, 2, 'F');
+            doc.setTextColor(...white);
+            doc.setFontSize(9);
+            doc.setFont('helvetica', 'bold');
+            doc.text(toolName, margin + 2, doc.lastYPosition + 5);
+
+            // User badge (Athletic Gold background)
+            doc.setFillColor(...athleticGold);
+            const userBadgeWidth = doc.getTextWidth(forUseBy) + 4;
+            doc.roundedRect(margin + 38, doc.lastYPosition, userBadgeWidth, 7, 2, 2, 'F');
+            doc.setTextColor(...darkGray);
+            doc.text(forUseBy, margin + 40, doc.lastYPosition + 5);
+
+            doc.lastYPosition += 15;
+
+            // Add all sections
+            const purposeData = getContent(useCase.sections, 'purpose', 'Purpose of the activity');
+            addSection('Purpose', purposeData.text, purposeData.isPlaceholder);
+
+            const instructionsData = getContent(useCase.sections, 'instructions', 'Detailed instructions for setting it up.');
+            addSection('Instructions', instructionsData.text, instructionsData.isPlaceholder);
+
+            const promptsData = getContent(useCase.sections, 'prompts', 'All the prompts that need to be entered.');
+            addSection('Prompts', promptsData.text, promptsData.isPlaceholder);
+
+            const variationsData = getContent(useCase.sections, 'variations', 'What can be changed to meet different needs.');
+            addSection('Variations', variationsData.text, variationsData.isPlaceholder);
+
+            const notesData = getContent(useCase.sections, 'notes', 'Warnings, tips for effective use.');
+            addSection('Notes', notesData.text, notesData.isPlaceholder);
+
+            const linksData = getContent(useCase.sections, 'links', 'Link to video demonstration: [to be added]\nLink to public demo:');
+            addSection('Links / Video', linksData.text, linksData.isPlaceholder);
+
+            // Add screenshots if they exist
+            const setupScreenshot = useCase.sections?.screenshot_setup || '';
+            const useScreenshot = useCase.sections?.screenshot_use || '';
+
+            if (setupScreenshot) {
+                if (doc.lastYPosition > 200) {
+                    doc.addPage();
+                    doc.lastYPosition = 20;
+                }
+
+                doc.setFillColor(245, 245, 245);
+                doc.rect(margin - 2, doc.lastYPosition - 5, contentWidth + 4, 8, 'F');
+                doc.setTextColor(...darkGray);
+                doc.setFontSize(12);
+                doc.setFont('helvetica', 'bold');
+                doc.text('Setup Screenshot', margin, doc.lastYPosition);
+                doc.lastYPosition += 10;
+
+                const imageData = await getImageAsBase64(setupScreenshot);
+                if (imageData) {
+                    const dimensions = await getImageDimensions(imageData);
+                    const aspectRatio = dimensions.height / dimensions.width;
+                    const imgWidth = contentWidth;
+                    const imgHeight = imgWidth * aspectRatio;
+
+                    if (doc.lastYPosition + imgHeight > 280) {
+                        doc.addPage();
+                        doc.lastYPosition = 20;
+                    }
+
+                    let format = 'JPEG';
+                    if (imageData.includes('data:image/png')) format = 'PNG';
+                    else if (imageData.includes('data:image/jpeg') || imageData.includes('data:image/jpg')) format = 'JPEG';
+                    else if (imageData.includes('data:image/webp')) format = 'WEBP';
+
+                    doc.addImage(imageData, format, margin, doc.lastYPosition, imgWidth, imgHeight);
+                    doc.lastYPosition += imgHeight + 10;
+                }
+            }
+
+            if (useScreenshot) {
+                if (doc.lastYPosition > 200) {
+                    doc.addPage();
+                    doc.lastYPosition = 20;
+                }
+
+                doc.setFillColor(245, 245, 245);
+                doc.rect(margin - 2, doc.lastYPosition - 5, contentWidth + 4, 8, 'F');
+                doc.setTextColor(...darkGray);
+                doc.setFontSize(12);
+                doc.setFont('helvetica', 'bold');
+                doc.text('Use Screenshot', margin, doc.lastYPosition);
+                doc.lastYPosition += 10;
+
+                const imageData = await getImageAsBase64(useScreenshot);
+                if (imageData) {
+                    const dimensions = await getImageDimensions(imageData);
+                    const aspectRatio = dimensions.height / dimensions.width;
+                    const imgWidth = contentWidth;
+                    const imgHeight = imgWidth * aspectRatio;
+
+                    if (doc.lastYPosition + imgHeight > 280) {
+                        doc.addPage();
+                        doc.lastYPosition = 20;
+                    }
+
+                    let format = 'JPEG';
+                    if (imageData.includes('data:image/png')) format = 'PNG';
+                    else if (imageData.includes('data:image/jpeg') || imageData.includes('data:image/jpg')) format = 'JPEG';
+                    else if (imageData.includes('data:image/webp')) format = 'WEBP';
+
+                    doc.addImage(imageData, format, margin, doc.lastYPosition, imgWidth, imgHeight);
+                    doc.lastYPosition += imgHeight + 10;
+                }
+            }
+        }
+
+        // Footer on last page
+        const pageCount = doc.internal.getNumberOfPages();
+        doc.setPage(pageCount);
+        doc.setTextColor(...mediumGray);
+        doc.setFontSize(8);
+        doc.text('© 2024 Purdue University Global. AI Use Case Catalog', margin, 287);
+        doc.text(`Generated: ${new Date().toLocaleDateString()}`, pageWidth - margin - 40, 287);
+
+        // Save the PDF
+        const fileName = `AI_Use_Cases_${currentlyDisplayedUseCases.length}_cases.pdf`;
+        doc.save(fileName);
+
+        button.disabled = false;
+        button.textContent = originalText;
+    } catch (error) {
+        console.error('Error generating PDF:', error);
+        alert('Error generating PDF: ' + error.message);
+        button.disabled = false;
+        button.textContent = originalText;
+    }
+}
+
 // Event listeners - Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
     // Load use cases from Firebase
@@ -143,4 +431,5 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('filter-tool').addEventListener('change', filterUseCases);
     document.getElementById('sort-by').addEventListener('change', filterUseCases);
     document.getElementById('reset-filters').addEventListener('click', resetFilters);
+    document.getElementById('export-filtered-pdf-btn').addEventListener('click', exportFilteredToPDF);
 });
