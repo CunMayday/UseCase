@@ -10,7 +10,7 @@ const firebaseConfig = {
 
   projectId: "purdue-ai-catalog",
 
-  storageBucket: "purdue-ai-catalog.appspot.com",
+  storageBucket: "purdue-ai-catalog.firebasestorage.app",
 
   messagingSenderId: "616585590715",
 
