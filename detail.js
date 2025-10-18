@@ -163,12 +163,12 @@ function displayUseCase(useCase) {
 // Helper function to convert image URL to base64
 async function getImageAsBase64(imageUrl) {
     try {
-        console.log('Fetching image:', imageUrl);
-        const response = await fetch(imageUrl, { mode: 'cors' });
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const blob = await response.blob();
+        console.log('Loading image:', imageUrl);
+
+        // Use Firebase Storage SDK to get the blob (handles CORS automatically)
+        const storageRef = storage.refFromURL(imageUrl);
+        const blob = await storageRef.getBlob();
+
         console.log('Blob type:', blob.type, 'Size:', blob.size);
 
         return new Promise((resolve, reject) => {
@@ -185,6 +185,7 @@ async function getImageAsBase64(imageUrl) {
         });
     } catch (error) {
         console.error('Error loading image:', error);
+        console.error('Error details:', error.code, error.message);
         return null;
     }
 }
