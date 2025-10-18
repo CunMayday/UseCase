@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - AI Use Case Catalog</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="admin-styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>AI Use Case Catalog - Admin</h1>
+            <div id="auth-status">
+                <span id="user-email"></span>
+                <button id="logout-btn" class="btn-secondary">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Login Section -->
+        <section id="login-section" style="display: none;">
+            <div class="auth-box">
+                <h2>Admin Login</h2>
+                <p>Please sign in to manage use cases.</p>
+                <div class="form-group">
+                    <label for="login-email">Email</label>
+                    <input type="email" id="login-email" placeholder="admin@purdue.edu">
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" placeholder="Password">
+                </div>
+                <button id="login-btn" class="btn-primary">Sign In</button>
+                <p id="login-error" class="error-message"></p>
+            </div>
+        </section>
+
+        <!-- Admin Panel -->
+        <section id="admin-panel" style="display: none;">
+            <div class="admin-actions">
+                <button id="add-new-btn" class="btn-primary">+ Add New Use Case</button>
+                <a href="index.html" class="btn-secondary">View Catalog</a>
+            </div>
+
+            <div id="use-cases-list" class="use-cases-list">
+                <h2>Manage Use Cases</h2>
+                <div id="admin-loading">Loading use cases...</div>
+                <div id="admin-use-cases"></div>
+            </div>
+        </section>
+
+        <!-- Add/Edit Form -->
+        <section id="form-section" style="display: none;">
+            <div class="form-container">
+                <h2 id="form-title">Add New Use Case</h2>
+                <button id="cancel-form-btn" class="btn-secondary">← Back to List</button>
+
+                <form id="use-case-form">
+                    <input type="hidden" id="edit-id">
+
+                    <div class="form-group">
+                        <label for="title">Title *</label>
+                        <input type="text" id="title" required placeholder="e.g., Mock Interviewer">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="ai_tool">AI Tool *</label>
+                            <select id="ai_tool" required>
+                                <option value="">Select Tool</option>
+                                <option value="GEM">Gemini Gem</option>
+                                <option value="NLM">Notebook LM</option>
+                                <option value="WEBAPP">Web Apps</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="for_use_by">For Use By *</label>
+                            <input type="text" id="for_use_by" required placeholder="e.g., Faculty, Students, Staff">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="purpose">Purpose *</label>
+                        <textarea id="purpose" required rows="4" placeholder="Purpose of the activity"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="instructions">Instructions</label>
+                        <textarea id="instructions" rows="4" placeholder="Detailed instructions for setting it up."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="prompts">Prompts</label>
+                        <textarea id="prompts" rows="6" placeholder="All the prompts that need to be entered."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="variations">Variations</label>
+                        <textarea id="variations" rows="3" placeholder="What can be changed to meet different needs."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="notes">Notes</label>
+                        <textarea id="notes" rows="3" placeholder="Warnings, tips for effective use."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="links">Links / Video</label>
+                        <textarea id="links" rows="3" placeholder="Link to video demonstration, public demo, etc."></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="screenshot_setup">Setup Screenshot</label>
+                            <input type="file" id="screenshot_setup" accept="image/*">
+                            <div id="setup-preview" class="image-preview"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="screenshot_use">Use Screenshot</label>
+                            <input type="file" id="screenshot_use" accept="image/*">
+                            <div id="use-preview" class="image-preview"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">Save Use Case</button>
+                        <button type="button" id="cancel-form-btn-2" class="btn-secondary">Cancel</button>
+                    </div>
+
+                    <p id="form-status" class="status-message"></p>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Purdue University. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+
+    <!-- Firebase Configuration -->
+    <script src="firebase-config.js"></script>
+
+    <!-- Admin Logic -->
+    <script src="admin.js"></script>
+</body>
+</html>

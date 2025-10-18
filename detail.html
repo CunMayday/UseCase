@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Use Case Details - AI Use Case Catalog</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="detail-header">
+        <div class="container">
+            <a href="index.html" class="back-link">← Back to Catalog</a>
+            <h1 id="use-case-title">Loading...</h1>
+            <div id="use-case-meta" class="detail-meta"></div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div id="detail-content" class="detail-content">
+            <p>Loading use case details...</p>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Purdue University. All rights reserved.</p>
+            <p>For more information about AI tools and policies, contact your department administrator.</p>
+        </div>
+    </footer>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+
+    <!-- Firebase Configuration -->
+    <script src="firebase-config.js"></script>
+
+    <!-- Detail Page Logic -->
+    <script src="detail.js"></script>
+</body>
+</html>

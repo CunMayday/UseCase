@@ -1,3 +1,28 @@
+// Global use cases array
+let useCases = [];
+
+// Load use cases from Firebase
+async function loadUseCases() {
+    try {
+        const snapshot = await useCasesCollection.orderBy('title').get();
+        useCases = [];
+
+        snapshot.forEach(doc => {
+            useCases.push({
+                id: doc.id,
+                ...doc.data()
+            });
+        });
+
+        displayUseCases(useCases);
+        updateResultsCount(useCases.length);
+    } catch (error) {
+        console.error('Error loading use cases:', error);
+        document.getElementById('use-cases-grid').innerHTML =
+            '<p style="color: red;">Error loading use cases. Please check Firebase configuration.</p>';
+    }
+}
+
 // Display use cases
 function displayUseCases(cases) {
     const grid = document.getElementById('use-cases-grid');
@@ -13,21 +38,18 @@ function displayUseCases(cases) {
     noResults.style.display = 'none';
 
     grid.innerHTML = cases.map(useCase => {
-        const purpose = useCase.sections.purpose || 'No description available.';
-        let toolName = 'Unknown';
-        if (useCase.ai_tool === 'GEM') toolName = 'Gemini Gem';
-        else if (useCase.ai_tool === 'NLM') toolName = 'Notebook LM';
-        else if (useCase.ai_tool === 'WEBAPP') toolName = 'Web Apps';
+        const purpose = useCase.sections?.purpose || 'No description available.';
+        const toolName = getToolName(useCase.ai_tool);
 
         return `
-            <div class="use-case-card" onclick="window.location.href='${useCase.id}.html'">
+            <div class="use-case-card" onclick="window.location.href='detail.html?id=${useCase.id}'">
                 <h3>${useCase.title}</h3>
                 <div class="card-meta">
                     <span class="badge badge-tool">${toolName}</span>
                     <span class="badge badge-user">${useCase.for_use_by || 'General'}</span>
                 </div>
                 <p class="card-purpose">${purpose}</p>
-                <a href="${useCase.id}.html" class="card-link" onclick="event.stopPropagation()">View Details</a>
+                <a href="detail.html?id=${useCase.id}" class="card-link" onclick="event.stopPropagation()">View Details</a>
             </div>
         `;
     }).join('');
@@ -104,9 +126,8 @@ function resetFilters() {
 
 // Event listeners - Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
-    // Display initial use cases
-    displayUseCases(useCases);
-    updateResultsCount(useCases.length);
+    // Load use cases from Firebase
+    loadUseCases();
 
     // Set up event listeners
     document.getElementById('filter-user').addEventListener('change', filterUseCases);

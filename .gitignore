@@ -1,0 +1,42 @@
+# Firebase private keys (if you ever download service account keys)
+*-firebase-adminsdk-*.json
+serviceAccountKey.json
+firebase-adminsdk.json
+
+# Environment files with secrets
+.env
+.env.local
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Temporary files
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Build files
+dist/
+build/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Note: firebase-config.js is intentionally NOT ignored
+# Firebase web API keys are meant to be public
+# Security is enforced by Firebase Security Rules
