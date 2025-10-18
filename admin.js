@@ -250,13 +250,27 @@ document.getElementById('use-case-form').addEventListener('submit', async (e) =>
         const useFile = document.getElementById('screenshot_use').files[0];
 
         if (setupFile) {
-            statusEl.textContent = 'Uploading setup screenshot...';
-            useCaseData.sections.screenshot_setup = await uploadImage(setupFile, docId, 'setup.jpg');
+            try {
+                statusEl.textContent = 'Uploading setup screenshot...';
+                useCaseData.sections.screenshot_setup = await uploadImage(setupFile, docId, 'setup.jpg');
+            } catch (uploadError) {
+                console.error('Error uploading setup screenshot:', uploadError);
+                statusEl.textContent = 'Error uploading setup screenshot: ' + uploadError.message;
+                statusEl.className = 'status-message error';
+                return;
+            }
         }
 
         if (useFile) {
-            statusEl.textContent = 'Uploading use screenshot...';
-            useCaseData.sections.screenshot_use = await uploadImage(useFile, docId, 'use.jpg');
+            try {
+                statusEl.textContent = 'Uploading use screenshot...';
+                useCaseData.sections.screenshot_use = await uploadImage(useFile, docId, 'use.jpg');
+            } catch (uploadError) {
+                console.error('Error uploading use screenshot:', uploadError);
+                statusEl.textContent = 'Error uploading use screenshot: ' + uploadError.message;
+                statusEl.className = 'status-message error';
+                return;
+            }
         }
 
         // Save to Firestore
@@ -273,7 +287,7 @@ document.getElementById('use-case-form').addEventListener('submit', async (e) =>
 
     } catch (error) {
         console.error('Error saving use case:', error);
-        statusEl.textContent = 'Error: ' + error.message;
+        statusEl.textContent = 'Error saving: ' + error.message;
         statusEl.className = 'status-message error';
     }
 });
