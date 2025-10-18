@@ -3,12 +3,19 @@
 // You'll get these values from Firebase Console after creating your project
 
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY_HERE",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
+
+  apiKey: "AIzaSyA5tmBFKqJRJxhY9-wqObIFSxrysgZbXVU",
+
+  authDomain: "purdue-ai-catalog.firebaseapp.com",
+
+  projectId: "purdue-ai-catalog",
+
+  storageBucket: "purdue-ai-catalog.firebasestorage.app",
+
+  messagingSenderId: "616585590715",
+
+  appId: "1:616585590715:web:8e2e2fd40d05cd30cdf69e"
+
 };
 
 // Initialize Firebase
