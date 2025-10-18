@@ -163,18 +163,44 @@ function displayUseCase(useCase) {
 // Helper function to convert image URL to base64
 async function getImageAsBase64(imageUrl) {
     try {
-        const response = await fetch(imageUrl);
+        console.log('Fetching image:', imageUrl);
+        const response = await fetch(imageUrl, { mode: 'cors' });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
         const blob = await response.blob();
+        console.log('Blob type:', blob.type, 'Size:', blob.size);
+
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
-            reader.onloadend = () => resolve(reader.result);
-            reader.onerror = reject;
+            reader.onloadend = () => {
+                console.log('Image converted to base64');
+                resolve(reader.result);
+            };
+            reader.onerror = (error) => {
+                console.error('FileReader error:', error);
+                reject(error);
+            };
             reader.readAsDataURL(blob);
         });
     } catch (error) {
         console.error('Error loading image:', error);
         return null;
     }
+}
+
+// Helper function to get image dimensions
+function getImageDimensions(base64) {
+    return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+            resolve({ width: img.width, height: img.height });
+        };
+        img.onerror = () => {
+            resolve({ width: 800, height: 600 }); // Default
+        };
+        img.src = base64;
+    });
 }
 
 // Export current use case as PDF
@@ -197,36 +223,51 @@ async function exportToPDF() {
         });
 
         // Purdue Colors
-        const campusGold = [194, 142, 14];
-        const black = [0, 0, 0];
-        const darkGray = [51, 51, 51];
-        const gray = [128, 128, 128];
+        const campusGold = [194, 142, 14];     // #C28E0E
+        const athleticGold = [206, 184, 136];  // #CEB888
+        const black = [0, 0, 0];                // #000000
+        const darkGray = [51, 51, 51];         // #333333
+        const mediumGray = [102, 102, 102];    // #666666
+        const lightGray = [153, 153, 153];     // #999999
+        const white = [255, 255, 255];
 
         let yPosition = 20;
         const pageWidth = 210;
         const margin = 20;
         const contentWidth = pageWidth - (margin * 2);
 
-        // Header - Title
-        doc.setFillColor(...campusGold);
-        doc.rect(0, 0, pageWidth, 15, 'F');
-        doc.setTextColor(255, 255, 255);
+        // Header - BLACK background with white text (matching website)
+        doc.setFillColor(...black);
+        doc.rect(0, 0, pageWidth, 20, 'F');
+        doc.setTextColor(...white);
         doc.setFontSize(18);
         doc.setFont('helvetica', 'bold');
-        doc.text(currentUseCase.title, margin, 10);
+        doc.text(currentUseCase.title, margin, 12);
 
-        yPosition = 25;
+        yPosition = 28;
 
-        // Meta information
-        doc.setTextColor(...darkGray);
-        doc.setFontSize(10);
-        doc.setFont('helvetica', 'normal');
+        // Meta information - Colored badges
         const toolName = getToolName(currentUseCase.ai_tool);
         const forUseBy = Array.isArray(currentUseCase.for_use_by)
             ? currentUseCase.for_use_by.join(', ')
             : (currentUseCase.for_use_by || 'General');
-        doc.text(`Tool: ${toolName}  |  For: ${forUseBy}`, margin, yPosition);
-        yPosition += 10;
+
+        // Tool badge (Campus Gold background)
+        doc.setFillColor(...campusGold);
+        doc.roundedRect(margin, yPosition, 35, 7, 2, 2, 'F');
+        doc.setTextColor(...white);
+        doc.setFontSize(9);
+        doc.setFont('helvetica', 'bold');
+        doc.text(toolName, margin + 2, yPosition + 5);
+
+        // User badge (Athletic Gold background)
+        doc.setFillColor(...athleticGold);
+        const userBadgeWidth = doc.getTextWidth(forUseBy) + 4;
+        doc.roundedRect(margin + 38, yPosition, userBadgeWidth, 7, 2, 2, 'F');
+        doc.setTextColor(...darkGray);
+        doc.text(forUseBy, margin + 40, yPosition + 5);
+
+        yPosition += 15;
 
         // Helper function to add section
         const addSection = (title, content, isPlaceholder = false) => {
@@ -236,16 +277,19 @@ async function exportToPDF() {
                 yPosition = 20;
             }
 
-            // Section title
-            doc.setTextColor(...campusGold);
-            doc.setFontSize(14);
+            // Section title with light gray background
+            doc.setFillColor(245, 245, 245); // Very light gray background
+            doc.rect(margin - 2, yPosition - 5, contentWidth + 4, 8, 'F');
+
+            doc.setTextColor(...darkGray);
+            doc.setFontSize(12);
             doc.setFont('helvetica', 'bold');
             doc.text(title, margin, yPosition);
-            yPosition += 7;
+            yPosition += 8;
 
             // Section content
             if (isPlaceholder) {
-                doc.setTextColor(...gray);
+                doc.setTextColor(...lightGray);
                 doc.setFont('helvetica', 'italic');
             } else {
                 doc.setTextColor(...black);
@@ -255,7 +299,7 @@ async function exportToPDF() {
 
             const lines = doc.splitTextToSize(content, contentWidth);
             doc.text(lines, margin, yPosition);
-            yPosition += (lines.length * 5) + 5;
+            yPosition += (lines.length * 5) + 7;
         };
 
         // Helper function to check content
@@ -297,16 +341,23 @@ async function exportToPDF() {
                 yPosition = 20;
             }
 
-            doc.setTextColor(...campusGold);
+            // Section header with gray background
+            doc.setFillColor(245, 245, 245);
+            doc.rect(margin - 2, yPosition - 5, contentWidth + 4, 8, 'F');
+            doc.setTextColor(...darkGray);
             doc.setFontSize(12);
             doc.setFont('helvetica', 'bold');
             doc.text('Setup Screenshot', margin, yPosition);
-            yPosition += 7;
+            yPosition += 10;
 
             const imageData = await getImageAsBase64(setupScreenshot);
             if (imageData) {
+                const dimensions = await getImageDimensions(imageData);
+                const aspectRatio = dimensions.height / dimensions.width;
+
+                // Calculate image size to fit page width
                 const imgWidth = contentWidth;
-                const imgHeight = imgWidth * 0.75; // Maintain aspect ratio approximation
+                const imgHeight = imgWidth * aspectRatio;
 
                 // Check if image fits on current page
                 if (yPosition + imgHeight > 280) {
@@ -314,8 +365,23 @@ async function exportToPDF() {
                     yPosition = 20;
                 }
 
-                doc.addImage(imageData, 'JPEG', margin, yPosition, imgWidth, imgHeight);
+                // Detect image format from base64
+                let format = 'JPEG';
+                if (imageData.includes('data:image/png')) format = 'PNG';
+                else if (imageData.includes('data:image/jpeg') || imageData.includes('data:image/jpg')) format = 'JPEG';
+                else if (imageData.includes('data:image/webp')) format = 'WEBP';
+
+                console.log(`Adding setup screenshot: format=${format}, width=${imgWidth}mm, height=${imgHeight}mm`);
+
+                doc.addImage(imageData, format, margin, yPosition, imgWidth, imgHeight);
                 yPosition += imgHeight + 10;
+            } else {
+                console.warn('Setup screenshot failed to load');
+                doc.setTextColor(...lightGray);
+                doc.setFontSize(9);
+                doc.setFont('helvetica', 'italic');
+                doc.text('[Screenshot failed to load]', margin, yPosition);
+                yPosition += 10;
             }
         }
 
@@ -326,16 +392,23 @@ async function exportToPDF() {
                 yPosition = 20;
             }
 
-            doc.setTextColor(...campusGold);
+            // Section header with gray background
+            doc.setFillColor(245, 245, 245);
+            doc.rect(margin - 2, yPosition - 5, contentWidth + 4, 8, 'F');
+            doc.setTextColor(...darkGray);
             doc.setFontSize(12);
             doc.setFont('helvetica', 'bold');
             doc.text('Use Screenshot', margin, yPosition);
-            yPosition += 7;
+            yPosition += 10;
 
             const imageData = await getImageAsBase64(useScreenshot);
             if (imageData) {
+                const dimensions = await getImageDimensions(imageData);
+                const aspectRatio = dimensions.height / dimensions.width;
+
+                // Calculate image size to fit page width
                 const imgWidth = contentWidth;
-                const imgHeight = imgWidth * 0.75; // Maintain aspect ratio approximation
+                const imgHeight = imgWidth * aspectRatio;
 
                 // Check if image fits on current page
                 if (yPosition + imgHeight > 280) {
@@ -343,15 +416,30 @@ async function exportToPDF() {
                     yPosition = 20;
                 }
 
-                doc.addImage(imageData, 'JPEG', margin, yPosition, imgWidth, imgHeight);
+                // Detect image format from base64
+                let format = 'JPEG';
+                if (imageData.includes('data:image/png')) format = 'PNG';
+                else if (imageData.includes('data:image/jpeg') || imageData.includes('data:image/jpg')) format = 'JPEG';
+                else if (imageData.includes('data:image/webp')) format = 'WEBP';
+
+                console.log(`Adding use screenshot: format=${format}, width=${imgWidth}mm, height=${imgHeight}mm`);
+
+                doc.addImage(imageData, format, margin, yPosition, imgWidth, imgHeight);
                 yPosition += imgHeight + 10;
+            } else {
+                console.warn('Use screenshot failed to load');
+                doc.setTextColor(...lightGray);
+                doc.setFontSize(9);
+                doc.setFont('helvetica', 'italic');
+                doc.text('[Screenshot failed to load]', margin, yPosition);
+                yPosition += 10;
             }
         }
 
         // Footer on last page
         const pageCount = doc.internal.getNumberOfPages();
         doc.setPage(pageCount);
-        doc.setTextColor(...gray);
+        doc.setTextColor(...mediumGray);
         doc.setFontSize(8);
         doc.text('© 2024 Purdue University. AI Use Case Catalog', margin, 287);
         doc.text(`Generated: ${new Date().toLocaleDateString()}`, pageWidth - margin - 40, 287);
