@@ -36,9 +36,10 @@ function displayUseCase(useCase) {
 
     // Update meta badges
     const toolName = getToolName(useCase.ai_tool);
+    const forUseBy = Array.isArray(useCase.for_use_by) ? useCase.for_use_by.join(', ') : (useCase.for_use_by || 'General');
     document.getElementById('use-case-meta').innerHTML = `
         <span class="badge badge-tool">${toolName}</span>
-        <span class="badge badge-user">${useCase.for_use_by || 'General'}</span>
+        <span class="badge badge-user">${forUseBy}</span>
     `;
 
     // Helper function to get section content or placeholder

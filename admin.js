@@ -70,11 +70,12 @@ async function loadUseCasesAdmin() {
 
         snapshot.forEach(doc => {
             const data = doc.data();
+            const forUseBy = Array.isArray(data.for_use_by) ? data.for_use_by.join(', ') : (data.for_use_by || 'N/A');
             html += `
                 <tr>
                     <td>${data.title}</td>
                     <td>${getToolName(data.ai_tool)}</td>
-                    <td>${data.for_use_by || 'N/A'}</td>
+                    <td>${forUseBy}</td>
                     <td class="actions">
                         <button onclick="editUseCase('${doc.id}')" class="btn-small btn-edit">Edit</button>
                         <button onclick="deleteUseCase('${doc.id}', '${data.title}')" class="btn-small btn-delete">Delete</button>
@@ -130,7 +131,13 @@ async function editUseCase(id) {
         document.getElementById('edit-id').value = id;
         document.getElementById('title').value = data.title || '';
         document.getElementById('ai_tool').value = data.ai_tool || '';
-        document.getElementById('for_use_by').value = data.for_use_by || '';
+
+        // Handle for_use_by as array
+        const userTypes = Array.isArray(data.for_use_by) ? data.for_use_by : (data.for_use_by ? [data.for_use_by] : []);
+        document.querySelectorAll('input[name="user_type"]').forEach(checkbox => {
+            checkbox.checked = userTypes.includes(checkbox.value);
+        });
+
         document.getElementById('purpose').value = data.sections?.purpose || '';
         document.getElementById('instructions').value = data.sections?.instructions || '';
         document.getElementById('prompts').value = data.sections?.prompts || '';
@@ -194,11 +201,24 @@ document.getElementById('use-case-form').addEventListener('submit', async (e) =>
     statusEl.className = 'status-message';
 
     try {
+        // Gather checked user types
+        const selectedUserTypes = [];
+        document.querySelectorAll('input[name="user_type"]:checked').forEach(checkbox => {
+            selectedUserTypes.push(checkbox.value);
+        });
+
+        // Validate at least one user type is selected
+        if (selectedUserTypes.length === 0) {
+            statusEl.textContent = 'Please select at least one user type.';
+            statusEl.className = 'status-message error';
+            return;
+        }
+
         // Gather form data
         const useCaseData = {
             title: document.getElementById('title').value,
             ai_tool: document.getElementById('ai_tool').value,
-            for_use_by: document.getElementById('for_use_by').value,
+            for_use_by: selectedUserTypes,
             sections: {
                 purpose: document.getElementById('purpose').value,
                 instructions: document.getElementById('instructions').value,

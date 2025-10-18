@@ -246,6 +246,39 @@
     color: #dc3545;
 }
 
+/* Checkbox Group */
+.checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    border: 2px solid var(--gray);
+    border-radius: 5px;
+    background-color: var(--light-bg);
+}
+
+.checkbox-group label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 400;
+    color: var(--dark-gray);
+    cursor: pointer;
+    padding: 0.25rem;
+    margin: 0;
+}
+
+.checkbox-group input[type="checkbox"] {
+    width: auto;
+    cursor: pointer;
+    margin: 0;
+}
+
+.checkbox-group label:hover {
+    background-color: rgba(194, 142, 14, 0.05);
+    border-radius: 3px;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .form-row {

@@ -77,8 +77,14 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="for_use_by">For Use By *</label>
-                            <input type="text" id="for_use_by" required placeholder="e.g., Faculty, Students, Staff">
+                            <label for="for_use_by">For Use By * (Select all that apply)</label>
+                            <div id="for_use_by" class="checkbox-group">
+                                <label><input type="checkbox" name="user_type" value="Students"> Students</label>
+                                <label><input type="checkbox" name="user_type" value="Faculty"> Faculty</label>
+                                <label><input type="checkbox" name="user_type" value="Curriculum"> Curriculum</label>
+                                <label><input type="checkbox" name="user_type" value="Staff"> Staff</label>
+                                <label><input type="checkbox" name="user_type" value="Administration"> Administration</label>
+                            </div>
                         </div>
                     </div>
 

@@ -40,13 +40,14 @@ function displayUseCases(cases) {
     grid.innerHTML = cases.map(useCase => {
         const purpose = useCase.sections?.purpose || 'No description available.';
         const toolName = getToolName(useCase.ai_tool);
+        const forUseBy = Array.isArray(useCase.for_use_by) ? useCase.for_use_by.join(', ') : (useCase.for_use_by || 'General');
 
         return `
             <div class="use-case-card" onclick="window.location.href='detail.html?id=${useCase.id}'">
                 <h3>${useCase.title}</h3>
                 <div class="card-meta">
                     <span class="badge badge-tool">${toolName}</span>
-                    <span class="badge badge-user">${useCase.for_use_by || 'General'}</span>
+                    <span class="badge badge-user">${forUseBy}</span>
                 </div>
                 <p class="card-purpose">${purpose}</p>
                 <a href="detail.html?id=${useCase.id}" class="card-link" onclick="event.stopPropagation()">View Details</a>
@@ -67,8 +68,16 @@ function filterUseCases() {
     const toolFilter = document.getElementById('filter-tool').value;
 
     let filtered = useCases.filter(useCase => {
-        const userMatch = userFilter === 'all' ||
-            (useCase.for_use_by && useCase.for_use_by.toLowerCase().includes(userFilter));
+        // Handle for_use_by as array
+        let userMatch = userFilter === 'all';
+        if (!userMatch) {
+            if (Array.isArray(useCase.for_use_by)) {
+                userMatch = useCase.for_use_by.some(user => user.toLowerCase().includes(userFilter));
+            } else if (useCase.for_use_by) {
+                userMatch = useCase.for_use_by.toLowerCase().includes(userFilter);
+            }
+        }
+
         const toolMatch = toolFilter === 'all' || useCase.ai_tool === toolFilter;
 
         return userMatch && toolMatch;
@@ -100,8 +109,8 @@ function sortUseCases(cases, sortBy) {
             break;
         case 'user':
             sorted.sort((a, b) => {
-                const userA = a.for_use_by || '';
-                const userB = b.for_use_by || '';
+                const userA = Array.isArray(a.for_use_by) ? a.for_use_by.join(', ') : (a.for_use_by || '');
+                const userB = Array.isArray(b.for_use_by) ? b.for_use_by.join(', ') : (b.for_use_by || '');
                 if (userA === userB) {
                     return a.title.localeCompare(b.title);
                 }
