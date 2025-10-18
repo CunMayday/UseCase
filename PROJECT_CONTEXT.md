@@ -110,7 +110,16 @@ Built a complete static website from a Word document containing AI use case exam
 ✅ Responsive design for mobile/desktop
 ✅ Works from local files (no server needed)
 
-### Latest Enhancement (2025-10-18)
+### Latest Enhancements (2025-10-18)
+
+✅ **PDF Export Feature**
+- Export individual use cases as professionally formatted PDFs
+- Includes full-size screenshots embedded in PDF
+- Purdue University branding (Campus Gold headers, proper colors)
+- Automatic pagination and layout
+- One-click export from detail page
+- See [PDF_EXPORT_FEATURE.md](PDF_EXPORT_FEATURE.md) for full documentation
+
 ✅ **Multiple User Type Selection**
 - Admin form now supports selecting multiple user types via checkboxes
 - Available options: Students, Faculty, Curriculum, Staff, Administration
@@ -118,6 +127,13 @@ Built a complete static website from a Word document containing AI use case exam
 - Filtering logic updated to work with multiple user types per use case
 - Detail pages and catalog cards display comma-separated list of user types
 - Backward compatible with existing single-value entries
+- See [MULTIPLE_USER_TYPES.md](MULTIPLE_USER_TYPES.md) for full documentation
+
+✅ **Improved Error Handling**
+- File input persistence bug fixed
+- Better error messages for image upload failures
+- File size and type validation (5MB max, images only)
+- Detailed console logging for debugging
 
 ## Use Cases Included
 
@@ -163,12 +179,17 @@ Built a complete static website from a Word document containing AI use case exam
 - ✅ Add admin user accounts
 - ✅ Integrate Google Sign-In for Purdue accounts
 - ✅ Support multiple user type selection per use case
+- ✅ Implement PDF export functionality for individual use cases
+- ✅ Upgrade to Firebase Blaze plan for Storage support
+- ✅ Fix file input persistence bugs
 
 ### Future Enhancements (Planned)
+- **PDF Export Phase 2:** Export multiple selected use cases in single PDF
+- **PDF Export Phase 3:** Export all filtered/sorted results
+- **Markdown Export:** Alternative export format for documentation
 - Search functionality (keyword search across use cases)
 - Tags/categories beyond just tool type
 - Comments or ratings system
-- Export to PDF functionality
 - Analytics to track popular use cases
 - Email notifications for new submissions
 

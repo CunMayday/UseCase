@@ -9,7 +9,10 @@
 <body>
     <header class="detail-header">
         <div class="container">
-            <a href="index.html" class="back-link">← Back to Catalog</a>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <a href="index.html" class="back-link">← Back to Catalog</a>
+                <button id="export-pdf-btn" class="btn-secondary" style="display: none;">📄 Export as PDF</button>
+            </div>
             <h1 id="use-case-title">Loading...</h1>
             <div id="use-case-meta" class="detail-meta"></div>
         </div>
@@ -36,6 +39,9 @@
 
     <!-- Firebase Configuration -->
     <script src="firebase-config.js"></script>
+
+    <!-- jsPDF Library for PDF Export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <!-- Detail Page Logic -->
     <script src="detail.js"></script>
