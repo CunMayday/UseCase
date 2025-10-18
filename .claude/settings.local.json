@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(start http://localhost:8000)",
+      "Bash(python -m http.server 8000)",
+      "Bash(dir /B *.html *.css *.js *.json *.md)",
+      "Bash(python -c \"import json; f=open(''use_cases.json'',''r'',encoding=''utf-8''); json.load(f); print(''JSON is valid'')\")",
+      "Bash(python rebuild_json.py)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

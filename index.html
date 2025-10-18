@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Use Case Catalog - Purdue University</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>AI Use Case Catalog</h1>
+            <p class="subtitle">Purdue University - Approved AI Tools & Applications</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="intro-section">
+            <div class="info-box">
+                <h2>About This Catalog</h2>
+                <p>This catalog presents real-world AI use cases to help faculty, staff, and students leverage approved AI tools effectively. The examples demonstrate practical applications while highlighting key information for successful implementation.</p>
+                <div class="important-notes">
+                    <h3>Important Notes</h3>
+                    <ul>
+                        <li><strong>Approved Tools:</strong> Only Gemini and Notebook LM are currently approved for use.</li>
+                        <li><strong>Gems:</strong> Cannot currently be shared. Their use is limited until sharing is possible. Custom GPTs are shown to demonstrate potential.</li>
+                        <li><strong>Organization:</strong> Use cases are sorted by AI tool (NotebookLM/Gemini/Gems) and intended user group (faculty/staff/students).</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="filters-section">
+            <h2>Filter & Sort Use Cases</h2>
+            <div class="filters-container">
+                <div class="filter-group">
+                    <label for="filter-user">Filter by User Type:</label>
+                    <select id="filter-user">
+                        <option value="all">All Users</option>
+                        <option value="faculty">Faculty</option>
+                        <option value="staff">Staff</option>
+                        <option value="students">Students</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="filter-tool">Filter by AI Tool:</label>
+                    <select id="filter-tool">
+                        <option value="all">All Tools</option>
+                        <option value="GEM">Gemini Gem</option>
+                        <option value="NLM">Notebook LM</option>
+                        <option value="WEBAPP">Web Apps</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="sort-by">Sort By:</label>
+                    <select id="sort-by">
+                        <option value="default">Default Order</option>
+                        <option value="title">Title (A-Z)</option>
+                        <option value="tool">AI Tool</option>
+                        <option value="user">User Type</option>
+                    </select>
+                </div>
+
+                <button id="reset-filters" class="btn-secondary">Reset Filters</button>
+            </div>
+        </section>
+
+        <section class="use-cases-section">
+            <h2>Use Cases <span id="results-count"></span></h2>
+            <div id="use-cases-grid" class="use-cases-grid">
+                <!-- Use cases will be dynamically inserted here -->
+            </div>
+            <div id="no-results" class="no-results" style="display: none;">
+                <p>No use cases match your current filters. Try adjusting your selection.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Purdue University. All rights reserved.</p>
+            <p>For more information about AI tools and policies, contact your department administrator.</p>
+        </div>
+    </footer>
+
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

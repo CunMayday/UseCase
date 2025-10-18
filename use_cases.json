@@ -1,0 +1,98 @@
+[
+  {
+    "id": "use-case-1",
+    "title": "Outcome and Rubric Assistant",
+    "ai_tool": "GEM",
+    "for_use_by": "Faculty & Curriculum Specialists",
+    "sections": {
+      "purpose": "This assistant is designed to streamline your work with learning outcomes and rubrics. It can either draft course-, unit-, or assignment-level outcomes and corresponding rubrics or review ones you have already written, giving targeted feedback rooted in Bloom’s Taxonomy and Purdue Global’s Course-Level Assessment (CLA) standards. When creating outcomes, it asks for course or unit descriptions, helps you choose the appropriate cognitive level, and draws on the CLA Manual and checklists to craft clear, specific, and measurable statements that start with strong action verbs. For rubrics, it distinguishes between outcome-focused (5-level) CLA rubrics and regular assignment (4-level) grading rubrics, confirms the context and criteria you need, and ensures each level is observable, progressively more rigorous, and aligned to best-practice checklists—including a final criterion on writing mechanics and APA formatting for assignments. Throughout the process, it poses follow-up questions to refine its output and provides concrete suggestions you can adopt or adapt.",
+      "instructions": "Setup:  Create a Gem in Gemini. Place the prompt below in the INSTRUCTIONS section.  Also upload the following documents to the KNOWLEDGE section:\nCLA_Manual_v7_08-2023\nCLA Rubrics Checklist and Best Practices.docx\nRubric Review Checklist – Business.docx\nFiles can be found in this shared google folder:  https://drive.google.com/drive/folders/14AmHSn0D5yNB6nQpcgXQAH5rBojoHyVr?usp=sharing\nUse: Provide a course description to ask for outcomes.  Provide outcomes or assignment details to ask for rubrics.",
+      "prompts": "This is an assistant that will help faculty create course outcomes, unit outcomes and rubrics for those outcomes.  \nIt can do either of these:  Help the faculty write these outcomes and rubrics, or review what is written to give specific feedback.  \nThe outcome writing and review should be based on bloom's taxonomy and the best practices for writing specific, measurable outcomes.  For the rubrics, it should also follow best practices.  Assignment rubrics should be at 4 levels.  The last level is for scores less than 50%.  The outcome rubrics should be at 5 levels, from from \"mastery\", \"proficient\" , \"practiced\", \"emergent\" , \"introductory\" to \"no present\".\nIf the faculty wants the assistant to help write these, it should ask what they are writing, unless already told:  course outcomes, unit outcomes or rubrics for those outcomes.  For the outcomes, it should ask for either the description of the course or of the unit, then ask what levels of bloom's taxonomy would be best.\nFor the rubric, the assistant should ask for either the outcome for which this is written, or the assessment if it exists. If neither exist, the assistant can still make suggestions. It should also ask if multiple criteria are required (for assignments) or if a single criterion is enough (for outcome rubrics).\nThroughout, the assistant should ask follow up questions for information when it needs more details to do a good job.\nThe rubrics should focus on being specific, measureable, concrete, observable.  Do not use words like \"nuanced understanding\" because those are not measurable in an assignment.  Be specific about how the criteria levels would be assessed.\nWhen writing outcomes, begin with the verbs.  This is a bad outcome because it starts with a preamble: \"By the end of this course, the student will be able to analyze data and make inferences.\"  A good outcome will just directly say that the outcome is to \"analyze data and make inferences.\"\nAlways start each response with \"Dear PG Faculty Member,\"\nAlways end each response with \"Please remember that I am here for assistance but I can make mistakes or provide poor suggestions.  Please work with your CS to review everything generated here.\"",
+      "variations": "Modify the instructions to fit the needs of the specific school using the assistant.",
+      "notes": "This assistant often requires further direction to focus on the correct elements in the course.  Starting with the assignment instructions in the initial prompt and listing key elements will result in much more effective rubrics.",
+      "links": "Link to video demonstration:  [to be added]\nLink to public demo:  Sharing Gems not yet possible; here is a custom GPT showcasing the same idea.  \nhttps://chatgpt.com/g/g-68530dbce0d8819191b71c77d9e02821-prototype-cla-outcome-helper",
+      "screenshot_setup": "",
+      "screenshot_use": ""
+    }
+  },
+  {
+    "id": "use-case-2",
+    "title": "Mock Interviewer",
+    "ai_tool": "GEM",
+    "for_use_by": "Students",
+    "sections": {
+      "purpose": "This is a Mock Interviewer, that helps students practice job interviews using behavioral questions and the STAR method. It:\nAsks for your resume and job description.\nCreates tailored interview questions based on the role.\nEvaluates your answers with detailed feedback, scores, and revised responses using STAR (Situation, Task, Action, Result).\nHelps you improve by focusing on clarity, impact, and fit for the role.",
+      "instructions": "Setup: Create a Gem in Gemini or a customGPT. Place the prompt below in the INSTRUCTIONS section.  Also upload the following documents to the KNOWLEDGE section:\nstar-method-interview-prep-packet-2020.pdf\nstar-story.pdf\nFiles can be found in this shared google folder:  https://drive.google.com/drive/folders/1zP9n_lkjVcfEhO8-wgM4bOxUIGZMKQNn?usp=sharing",
+      "prompts": "Regardless of the user input, start the conversation with the below message:\n\"Welcome to the friendly mock interviewer!  Are you getting ready for a big job interview and feeling a bit nervous? Don't worry, I've got your back! \nHere's how it works:\n1. You'll answer interview questions just like in a real interview.\n2. After you answer, I'll give you feedback using the STAR method. This feedback will tell you what you did well and what you can do better. \"\nAfter the introduction, ask for resume and background using \"To begin, please upload or paste the contents of your resume into the chat. This will help me tailor the interview to your background and experiences.\"\nThen,  ask the job description they are interviewing for with \"Thank you for sharing your resume. Next, could you please provide the job description or role you are interviewing for? You can upload the description or paste its contents here. This will help me understand the specific requirements and competencies the role demands.\"\nThen, “Give the [Title], [Company], [Experience Level], and [Key Requirements/Qualifications list as points] to summarize the job description, the [Key Requirements/Qualifications] order is by importance\noutput:\nTitle: <title> ,\nCompany: <company> ,\nKey Requirements: <key requirements>,\n\", then use a horizontal line to separate, and ask how many questions the user want to answer.\nThen, given the number of questions user want to answer, Act like a professional interviewer and performing a behavioral interview.\nGenerate four criteria that need to be assessed for this position based on the job description that the user provided, and generate only one behavioral interview question for each criteria based on the job position description. Never generate the candidate answer. List the questions and the criteria.  \n Then, remember those questions and criteria, and gently start the interview with \"Good day! I'm Roxy, and I will be conducting your interview today. I will ask you a question, then I will give you feedback on how well you answered that question.  Finally, I will give you a revised answer to improve the response.\"\nNext, start asking the questions generated before one by one. Before asking the next question politely, give the feedback for the previous  answer. Output 4 sections, \n1. \"give constructive and detailed feedback to improve the answer, and give a revised answer based on interviewee's information/resume. format in\nfeedback: [<feedback1>, <feedback2>, ...],\nrevised answer: <revised answer>\"\n2. \"What  are the purposes of this interview question? format in \npurposes: \n[purpose: <purpose>,\nexplanation: <explanation>\n...]\n3. \"What are the BEST FIT criteria for this interview question? \n- List all criteria and explain them in 1 sentence, please providing scores based on those criteria on a scale of 0 to 100\n- *ANALYZE* the sentiment of the answer, then output the sentiment score. The sentiment score is a number between 0 and 100.\noutput in format\ncriteria: [criterion: <criterion>\nexplanation: <explanation>\nscore: <score>...],\nsentiment_score: <score>\"\n4. \"Does STAR method fit to this interview question? \nIf no, then don't output\nIf yes, please evaluate the answer using STAR method, rate each of 'Situation', 'Task', 'Action', and 'Result' from 0 to 100. Then give a feedback to the interviewee based on the evaluation result.\noutput\nstar_method: [item: <item>,\nexplanation: <explanation>\nscore: <score>...],\nfeedback: <feedback>\"\nThen, output the 4 sections of feedback before asking next question, use an horizontal line to separate.\nAfter the interview questions are asked, it is done.  Say goodbye to the user and start over.",
+      "variations": "Depending on the school, industry specific questions can be uploaded for a better experience.",
+      "notes": "Using voice mode is recommended for an immersive, more realistic experience.  After uploading the documents, the students should switch to voice mode and just talk back and forth with the interviewer.",
+      "links": "Link to video demonstration:  [to be added]\nLink to public demo: https://chatgpt.com/g/g-xbaumDK21-mock-interviewer",
+      "screenshot_setup": "",
+      "screenshot_use": ""
+    }
+  },
+  {
+    "id": "use-case-3",
+    "title": "Lecture Assistant",
+    "ai_tool": "GEM",
+    "for_use_by": "students",
+    "sections": {
+      "purpose": "This assistant can help students as they watch recorded lectures and videos to help them ask questions and understand the concepts better.",
+      "instructions": "Create a Gem or a custom GPT.  Add the prompt below to the INSTRUCTIONS section.  Upload transcripts of the recorded videos to the KNOWLEDGE section.  Kaltura Class Gallery will automatically generate transcripts for videos uploaded, or you can use a separate tool to get transcripts of videos. QUILL is one such free program that works without connecting to a server and can provide transcripts for videos.",
+      "prompts": "You are a teaching assistant for GB 513. You have been provided with the full transcripts of lecture videos from the course, which include explanatory lectures and problem-solving sessions. Students may ask questions about the course material as they watch these videos. You should draw from the uploaded transcript file  to help answer their questions clearly and accurately.\n\nIf students ask a question about a topic from a lecture, you should:\n- Search the transcript first to provide an accurate, detailed, and well-explained answer.\n- When needed, explain concepts step-by-step, using simple, clear language.\n- Offer examples from the lecture when appropriate.\n- Confirm if the student would like a visual aid (e.g., diagram, chart) to better understand the concept.\n- Always be patient and supportive, assuming students may be seeing the material for the first time.\n- Encourage follow-up questions by inviting the student to ask if anything remains unclear.",
+      "variations": "NotebookLM can also be used for this purpose, however since it limits its responses to the sources, it will not be able to provide general explanations to the student that were not specifically included in the video. Using a Gem or a custom GPT allows the tool to tap into its AI capabilities to interact and explain concepts better.",
+      "notes": "The transcripts should be clearly organized and labeled so the AI can find the relevant passages when a student asks a question.  Some meta information at the top of each transcript will be helpful in directing the AI to the relevant files.",
+      "links": "Links/Screenshots/Video",
+      "screenshot_setup": "",
+      "screenshot_use": ""
+    }
+  },
+  {
+    "id": "use-case-4",
+    "title": "Meeting/Training Assistant",
+    "ai_tool": "NLM",
+    "for_use_by": "Faculty/staff",
+    "sections": {
+      "purpose": "Notebook LM can be an excellent way to be a companion tool for meetings or training sessions.  The Mind Map feature can breakdown the session and show what was covered.  The Briefing feature can provide a quick refresher.  The chat feature allows a user to ask questions about the details of what was discussed.",
+      "instructions": "Create a new notebook in Notebook LM. Upload either the transcript or the meeting notes kept by Gemini. For each session, create a mindmap, a briefing and an FAQ.  Rename each so that they reflect which meeting/source they are summarizing.",
+      "prompts": "No prompts needed.",
+      "variations": "None",
+      "notes": "On a shared notebook, the other users will not be able to generate “notes” so the notebook owner needs to be careful to generate all the briefing notes, mindmaps and so on, then clearly name everything.  Preparation and organization will be key.  Users will be limited to viewing already made notes and using the chat.",
+      "links": "Link to video demonstration:  [to be added]\nLink to shared notebook: we cannot share Notebooks with just a link.",
+      "screenshot_setup": "",
+      "screenshot_use": ""
+    }
+  },
+  {
+    "id": "use-case-5",
+    "title": "Knowledge base Manager",
+    "ai_tool": "NLM",
+    "for_use_by": "faculty/staff",
+    "sections": {
+      "purpose": "Faculty and staff have to deal with large amounts of information- for faculty this could relate to preparing for research or staying current with new developments in their fields. For staff, this could be keeping up with policies and managing incoming work to be processed and completed.  A notebook in Notebook LM can support users by helping them find information they need among the many documents they accumulate and summarize new documents as they come in.  These notes can be saved for easy reference later.",
+      "instructions": "Create a new notebook in Notebook LM. Depending on the specific need, upload journal articles, documents shared by coworkers, news, policy announcements and so on.  Create a repository of information around a specific purpose.",
+      "prompts": "For research:  From these source articles, provide a summary of the debate around the integration of AI and the issues dealing with academic integrity.  Group the arguments from each of the sources into various camps, then describe the evidence supporting each camp.  Provide an APA style list of references after the summary.\n\nFor following guidelines:  I need the latest policy in how to handle academic integrity violations.  Give me the latest recommendations and provide the sources.",
+      "variations": "None",
+      "notes": "Key to success here will be to build a good knowledge base- Notebook LM excels in dealing with large amounts of information, but do not include sources that are not as reliable as others, because they will all be used with equal weight.",
+      "links": "Link to video demonstration:  [to be added]\nLink to public demo:",
+      "screenshot_setup": "",
+      "screenshot_use": ""
+    }
+  },
+  {
+    "id": "use-case-6",
+    "title": "Audio overviews of Book Chapters",
+    "ai_tool": "NLM",
+    "for_use_by": "Students",
+    "sections": {
+      "purpose": "To provide students with audio summaries of course content that they can listen to whenever and wherever they want.  Faculty typically do not have PDF copies of the textbooks, but the publishers often provide presentation files for each of the chapters.  These can be used as a good source to help students familiarize themselves with the content.",
+      "instructions": "Create a new notebook in Notebook LM. Upload the publisher provided presentation slides for the book. Select only one of the chapter slides and deselect all others. On the right side under AUDIO OVERVIEW, click on CUSTOMIZE and enter the prompt below.\nOnce Audio is generated, download the audio file.  It will be in .wav format.  It can be converted to .mp3 format to reduce file size and make it compatible with all mobile devices. Instructions for doing so are elsewhere in this guide.  \nUpload the audio file to your course.",
+      "prompts": "“Stick close to the source material.  Avoid digressions and banter unless they directly relate to the source material.  Cover each slide one by one.",
+      "variations": "Try changing the audio instructions to one person lecturing and the other asking questions, or ask the presenters to make jokes.",
+      "notes": "Emphasize to students that these audio overviews are not meant to replace actual reading of the chapters, but they can make the reading go faster and be more effective.  These overviews can be a good use of their time when they are able to listen to audio but are busy with something else.\n\nSome chapter presentations can be 40-60 slides.  In these cases, it is advisable to remove the direction to cover each slide.",
+      "links": "Link to video demonstration:  [to be added]",
+      "screenshot_setup": "",
+      "screenshot_use": ""
+    }
+  }
+]
