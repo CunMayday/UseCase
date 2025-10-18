@@ -1,5 +1,28 @@
 # Firebase Migration - What Changed
 
+## Project Information
+
+**Live Site:** https://cunmayday.github.io/UseCase
+**GitHub Repo:** https://github.com/cunmayday/UseCase
+**Admin Panel:** https://cunmayday.github.io/UseCase/admin.html
+
+### ⚠️ IMPORTANT - Current Configuration:
+1. **Test Mode** - Firestore is currently in TEST MODE (open access)
+   - Anyone can read AND write to the database
+   - Authentication NOT yet enforced
+   - **TODO:** Enable authentication and update security rules before production use
+
+2. **Security Rules Status:**
+   - Current: Test mode (allow read, write: if true)
+   - Planned: Authenticated writes only (allow write: if request.auth != null)
+
+3. **Next Steps for Production:**
+   - Enable Firebase Authentication
+   - Update Firestore security rules
+   - Update Storage security rules
+   - Add admin user(s)
+   - Test admin panel login
+
 ## ✅ All Changes Complete!
 
 Your AI Use Case Catalog has been completely transformed from a static website to a dynamic, Firebase-powered application with full CRUD (Create, Read, Update, Delete) functionality.

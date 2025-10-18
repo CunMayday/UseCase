@@ -1,7 +1,18 @@
 # Claude Instructions - AI Use Case Catalog Project
 
+## Project Information
+
+**Live Site:** https://cunmayday.github.io/UseCase
+**GitHub Repo:** https://github.com/cunmayday/UseCase
+**Admin Panel:** https://cunmayday.github.io/UseCase/admin.html
+
+### ⚠️ Current Configuration:
+1. **Test Build** - Firestore in TEST MODE (open access for development)
+2. **Authentication** - Will be enabled later for production
+3. **Repository Name** - UseCase (not ai-use-case-catalog)
+
 ## Project Overview
-This is a static website catalog for AI tool use cases at Purdue University. It displays use cases for tools like Gemini Gems, Notebook LM, and Web Apps, with filtering, sorting, and detailed view pages.
+This is a Firebase-powered dynamic catalog for AI tool use cases at Purdue University. It displays use cases for tools like Gemini Gems, Notebook LM, and Web Apps, with filtering, sorting, and detailed view pages. Admins can add/edit/delete content through a web interface.
 
 ## Design Guidelines
 

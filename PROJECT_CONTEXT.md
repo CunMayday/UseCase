@@ -1,5 +1,16 @@
 # AI Use Case Catalog - Project Context & Status
 
+## Project Information
+
+**Live Site:** https://cunmayday.github.io/UseCase
+**GitHub Repo:** https://github.com/cunmayday/UseCase
+**Admin Panel:** https://cunmayday.github.io/UseCase/admin.html
+
+### ⚠️ Current Configuration Notes:
+1. **Test Build** - Currently using Firestore test mode (no authentication required for reads/writes)
+2. **Authentication** - Will be added later for production
+3. **Repository Name** - UseCase (capitalized)
+
 ## Project Purpose
 Create a web-based catalog of AI tool use cases for Purdue University, allowing faculty, staff, and students to browse, filter, and view detailed information about approved AI tools and their applications.
 
