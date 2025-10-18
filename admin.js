@@ -114,9 +114,18 @@ document.getElementById('cancel-form-btn-2').addEventListener('click', () => {
 function resetForm() {
     document.getElementById('use-case-form').reset();
     document.getElementById('edit-id').value = '';
+
+    // Clear file inputs explicitly
+    document.getElementById('screenshot_setup').value = '';
+    document.getElementById('screenshot_use').value = '';
+
+    // Clear previews
     document.getElementById('setup-preview').innerHTML = '';
     document.getElementById('use-preview').innerHTML = '';
+
+    // Clear status message
     document.getElementById('form-status').textContent = '';
+    document.getElementById('form-status').className = 'status-message';
 }
 
 // Edit use case
@@ -145,6 +154,14 @@ async function editUseCase(id) {
         document.getElementById('notes').value = data.sections?.notes || '';
         document.getElementById('links').value = data.sections?.links || '';
 
+        // IMPORTANT: Clear file inputs to prevent old selections from persisting
+        document.getElementById('screenshot_setup').value = '';
+        document.getElementById('screenshot_use').value = '';
+
+        // Clear previews first
+        document.getElementById('setup-preview').innerHTML = '';
+        document.getElementById('use-preview').innerHTML = '';
+
         // Show existing screenshots
         if (data.sections?.screenshot_setup) {
             document.getElementById('setup-preview').innerHTML =
@@ -154,6 +171,10 @@ async function editUseCase(id) {
             document.getElementById('use-preview').innerHTML =
                 `<img src="${data.sections.screenshot_use}" alt="Use"><p>Current screenshot (upload new to replace)</p>`;
         }
+
+        // Clear any previous error/status messages
+        document.getElementById('form-status').textContent = '';
+        document.getElementById('form-status').className = 'status-message';
 
         showFormSection();
     } catch (error) {
@@ -257,6 +278,10 @@ document.getElementById('use-case-form').addEventListener('submit', async (e) =>
                 console.error('Error uploading setup screenshot:', uploadError);
                 statusEl.textContent = 'Error uploading setup screenshot: ' + uploadError.message;
                 statusEl.className = 'status-message error';
+
+                // Clear the file input so it doesn't persist to next edit
+                document.getElementById('screenshot_setup').value = '';
+                document.getElementById('setup-preview').innerHTML = '';
                 return;
             }
         }
@@ -269,6 +294,10 @@ document.getElementById('use-case-form').addEventListener('submit', async (e) =>
                 console.error('Error uploading use screenshot:', uploadError);
                 statusEl.textContent = 'Error uploading use screenshot: ' + uploadError.message;
                 statusEl.className = 'status-message error';
+
+                // Clear the file input so it doesn't persist to next edit
+                document.getElementById('screenshot_use').value = '';
+                document.getElementById('use-preview').innerHTML = '';
                 return;
             }
         }
