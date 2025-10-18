@@ -143,7 +143,7 @@ def create_detail_page(use_case):
 
     <footer>
         <div class="container">
-            <p>&copy; 2024 Purdue University. All rights reserved.</p>
+            <p>&copy; 2024 Purdue University Global. All rights reserved.</p>
             <p>For more information about AI tools and policies, contact your department administrator.</p>
         </div>
     </footer>
