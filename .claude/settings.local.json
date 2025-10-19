@@ -12,7 +12,12 @@
       "Bash(git add index.html)",
       "Bash(git commit -m \"Fix: Add jsPDF library to index.html for bulk PDF export\n\nThe jsPDF library was missing from the main page, causing the bulk export\nfeature to fail with ''window.jspdf is undefined'' error.\n\nAdded the jsPDF CDN script tag before app.js to enable bulk PDF export\nfunctionality.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\")",
       "Bash(git push)",
-      "Bash(git add -A)"
+      "Bash(git add -A)",
+      "Bash(git merge bulk-pdf-export-feature -m \"Merge bulk-pdf-export-feature: Add Submitted By field and all export features\")",
+      "Bash(git push origin main)",
+      "Bash(git branch -d bulk-pdf-export-feature)",
+      "Bash(git push origin --delete bulk-pdf-export-feature)",
+      "Bash(del \"c:\\Users\\cuneyt\\Documents\\GitHub\\UseCase\\UseCase\\GOOGLE_SIGNIN_SETUP.md\")"
     ],
     "deny": [],
     "ask": []
