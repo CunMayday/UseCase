@@ -132,6 +132,7 @@ def create_detail_page(use_case):
                 <span class="badge badge-tool">{tool_name}</span>
                 <span class="badge badge-user">{use_case.get('for_use_by', 'General')}</span>
             </div>
+            {f'<p class="submitted-by">Submitted by: {use_case.get("submitted_by")}</p>' if use_case.get('submitted_by') else ''}
         </div>
     </header>
 

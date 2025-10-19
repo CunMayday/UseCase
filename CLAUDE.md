@@ -88,6 +88,7 @@ This is a Firebase-powered dynamic catalog for AI tool use cases at Purdue Unive
 {
   "id": "use-case-X",
   "title": "Use Case Title",
+  "submitted_by": "Name or department (optional)",
   "ai_tool": "GEM|NLM|WEBAPP",
   "for_use_by": "Faculty|Staff|Students|etc",
   "sections": {
