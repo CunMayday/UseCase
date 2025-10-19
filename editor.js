@@ -139,6 +139,7 @@ async function editUseCase(id) {
 
         document.getElementById('edit-id').value = id;
         document.getElementById('title').value = data.title || '';
+        document.getElementById('submitted_by').value = data.submitted_by || '';
         document.getElementById('ai_tool').value = data.ai_tool || '';
 
         // Handle for_use_by as array
@@ -238,6 +239,7 @@ document.getElementById('use-case-form').addEventListener('submit', async (e) =>
         // Gather form data
         const useCaseData = {
             title: document.getElementById('title').value,
+            submitted_by: document.getElementById('submitted_by').value || '',
             ai_tool: document.getElementById('ai_tool').value,
             for_use_by: selectedUserTypes,
             sections: {

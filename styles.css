@@ -407,6 +407,14 @@ footer p {
     margin-bottom: 1.5rem;
 }
 
+.submitted-by {
+    color: var(--gray);
+    font-size: 0.95rem;
+    font-style: italic;
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
+}
+
 .detail-content {
     background-color: var(--white);
     border-radius: 8px;

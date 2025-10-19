@@ -44,9 +44,12 @@ function displayUseCase(useCase) {
     // Update meta badges
     const toolName = getToolName(useCase.ai_tool);
     const forUseBy = Array.isArray(useCase.for_use_by) ? useCase.for_use_by.join(', ') : (useCase.for_use_by || 'General');
+    const submittedByHTML = useCase.submitted_by ? `<p class="submitted-by">Submitted by: ${useCase.submitted_by}</p>` : '';
+
     document.getElementById('use-case-meta').innerHTML = `
         <span class="badge badge-tool">${toolName}</span>
         <span class="badge badge-user">${forUseBy}</span>
+        ${submittedByHTML}
     `;
 
     // Helper function to get section content or placeholder
@@ -257,6 +260,15 @@ async function exportToPDF() {
         doc.text(forUseBy, margin + 40, yPosition + 5);
 
         yPosition += 15;
+
+        // Submitted by (if present)
+        if (currentUseCase.submitted_by) {
+            doc.setTextColor(...mediumGray);
+            doc.setFontSize(9);
+            doc.setFont('helvetica', 'italic');
+            doc.text(`Submitted by: ${currentUseCase.submitted_by}`, margin, yPosition);
+            yPosition += 10;
+        }
 
         // Helper function to add section
         const addSection = (title, content, isPlaceholder = false) => {

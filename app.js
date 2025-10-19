@@ -303,6 +303,15 @@ async function exportFilteredToPDF() {
 
             doc.lastYPosition += 15;
 
+            // Submitted by (if present)
+            if (useCase.submitted_by) {
+                doc.setTextColor(...mediumGray);
+                doc.setFontSize(9);
+                doc.setFont('helvetica', 'italic');
+                doc.text(`Submitted by: ${useCase.submitted_by}`, margin, doc.lastYPosition);
+                doc.lastYPosition += 10;
+            }
+
             // Add all sections
             const purposeData = getContent(useCase.sections, 'purpose', 'Purpose of the activity');
             addSection('Purpose', purposeData.text, purposeData.isPlaceholder);
