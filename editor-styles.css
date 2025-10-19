@@ -1,4 +1,4 @@
-/* Admin Page Specific Styles */
+/* Editor Page Specific Styles */
 
 /* Auth Status */
 #auth-status {
@@ -28,15 +28,15 @@
     margin-bottom: 1rem;
 }
 
-/* Admin Actions */
-.admin-actions {
+/* Editor Actions */
+.editor-actions {
     display: flex;
     gap: 1rem;
     margin-bottom: 2rem;
 }
 
 .btn-primary {
-    background-color: var(--campus-gold);
+    background-color: var(--dark-gray);
     color: var(--white);
     padding: 0.75rem 1.5rem;
     border: none;
@@ -53,8 +53,8 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-/* Admin Table */
-.admin-table {
+/* Editor Table */
+.editor-table {
     width: 100%;
     border-collapse: collapse;
     background-color: var(--white);
@@ -63,27 +63,27 @@
     overflow: hidden;
 }
 
-.admin-table thead {
+.editor-table thead {
     background: linear-gradient(135deg, var(--purdue-black) 0%, var(--dark-gray) 100%);
     color: var(--white);
 }
 
-.admin-table th {
+.editor-table th {
     padding: 1rem;
     text-align: left;
     font-weight: 700;
 }
 
-.admin-table td {
+.editor-table td {
     padding: 1rem;
     border-bottom: 1px solid var(--border-color);
 }
 
-.admin-table tr:hover {
+.editor-table tr:hover {
     background-color: var(--light-bg);
 }
 
-.admin-table .actions {
+.editor-table .actions {
     display: flex;
     gap: 0.5rem;
 }
@@ -285,15 +285,15 @@
         grid-template-columns: 1fr;
     }
 
-    .admin-actions {
+    .editor-actions {
         flex-direction: column;
     }
 
-    .admin-table {
+    .editor-table {
         font-size: 0.9rem;
     }
 
-    .admin-table .actions {
+    .editor-table .actions {
         flex-direction: column;
     }
 }
