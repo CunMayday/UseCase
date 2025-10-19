@@ -7,7 +7,12 @@
       "Bash(python -c \"import json; f=open(''use_cases.json'',''r'',encoding=''utf-8''); json.load(f); print(''JSON is valid'')\")",
       "Bash(python rebuild_json.py)",
       "Bash(git checkout -b bulk-pdf-export-feature)",
-      "Bash(git add .)"
+      "Bash(git add .)",
+      "Bash(git push -u origin bulk-pdf-export-feature)",
+      "Bash(git add index.html)",
+      "Bash(git commit -m \"Fix: Add jsPDF library to index.html for bulk PDF export\n\nThe jsPDF library was missing from the main page, causing the bulk export\nfeature to fail with ''window.jspdf is undefined'' error.\n\nAdded the jsPDF CDN script tag before app.js to enable bulk PDF export\nfunctionality.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\")",
+      "Bash(git push)",
+      "Bash(git add -A)"
     ],
     "deny": [],
     "ask": []

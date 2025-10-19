@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - AI Use Case Catalog</title>
+    <title>Editor - AI Use Case Catalog</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="admin-styles.css">
+    <link rel="stylesheet" href="editor-styles.css">
 </head>
 <body>
     <header>
         <div class="container">
-            <h1>AI Use Case Catalog - Admin</h1>
+            <h1>AI Use Case Catalog - Editor</h1>
             <div id="auth-status">
                 <span id="user-email"></span>
                 <button id="logout-btn" class="btn-secondary">Logout</button>
@@ -22,11 +22,11 @@
         <!-- Login Section -->
         <section id="login-section" style="display: none;">
             <div class="auth-box">
-                <h2>Admin Login</h2>
+                <h2>Editor Login</h2>
                 <p>Please sign in to manage use cases.</p>
                 <div class="form-group">
                     <label for="login-email">Email</label>
-                    <input type="email" id="login-email" placeholder="admin@purdue.edu">
+                    <input type="email" id="login-email" placeholder="editor@purdue.edu">
                 </div>
                 <div class="form-group">
                     <label for="login-password">Password</label>
@@ -37,17 +37,17 @@
             </div>
         </section>
 
-        <!-- Admin Panel -->
-        <section id="admin-panel" style="display: none;">
-            <div class="admin-actions">
+        <!-- Editor Panel -->
+        <section id="editor-panel" style="display: none;">
+            <div class="editor-actions">
                 <button id="add-new-btn" class="btn-primary">+ Add New Use Case</button>
                 <a href="index.html" class="btn-secondary">View Catalog</a>
             </div>
 
             <div id="use-cases-list" class="use-cases-list">
                 <h2>Manage Use Cases</h2>
-                <div id="admin-loading">Loading use cases...</div>
-                <div id="admin-use-cases"></div>
+                <div id="editor-loading">Loading use cases...</div>
+                <div id="editor-use-cases"></div>
             </div>
         </section>
 
@@ -158,7 +158,7 @@
     <!-- Firebase Configuration -->
     <script src="firebase-config.js"></script>
 
-    <!-- Admin Logic -->
-    <script src="admin.js"></script>
+    <!-- Editor Logic -->
+    <script src="editor.js"></script>
 </body>
 </html>

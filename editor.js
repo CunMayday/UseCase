@@ -6,9 +6,9 @@ let editingId = null;
 auth.onAuthStateChanged(user => {
     currentUser = user;
     if (user) {
-        showAdminPanel();
+        showEditorPanel();
         document.getElementById('user-email').textContent = user.email;
-        loadUseCasesAdmin();
+        loadUseCasesEditor();
     } else {
         showLoginSection();
     }
@@ -17,19 +17,19 @@ auth.onAuthStateChanged(user => {
 // Show/Hide sections
 function showLoginSection() {
     document.getElementById('login-section').style.display = 'block';
-    document.getElementById('admin-panel').style.display = 'none';
+    document.getElementById('editor-panel').style.display = 'none';
     document.getElementById('form-section').style.display = 'none';
 }
 
-function showAdminPanel() {
+function showEditorPanel() {
     document.getElementById('login-section').style.display = 'none';
-    document.getElementById('admin-panel').style.display = 'block';
+    document.getElementById('editor-panel').style.display = 'block';
     document.getElementById('form-section').style.display = 'none';
 }
 
 function showFormSection() {
     document.getElementById('login-section').style.display = 'none';
-    document.getElementById('admin-panel').style.display = 'none';
+    document.getElementById('editor-panel').style.display = 'none';
     document.getElementById('form-section').style.display = 'block';
 }
 
@@ -52,10 +52,10 @@ document.getElementById('logout-btn').addEventListener('click', () => {
     auth.signOut();
 });
 
-// Load use cases for admin
-async function loadUseCasesAdmin() {
-    const loadingEl = document.getElementById('admin-loading');
-    const listEl = document.getElementById('admin-use-cases');
+// Load use cases for editor
+async function loadUseCasesEditor() {
+    const loadingEl = document.getElementById('editor-loading');
+    const listEl = document.getElementById('editor-use-cases');
 
     try {
         const snapshot = await useCasesCollection.orderBy('title').get();
@@ -66,7 +66,7 @@ async function loadUseCasesAdmin() {
             return;
         }
 
-        let html = '<table class="admin-table"><thead><tr><th>Title</th><th>Tool</th><th>For</th><th>Actions</th></tr></thead><tbody>';
+        let html = '<table class="editor-table"><thead><tr><th>Title</th><th>Tool</th><th>For</th><th>Actions</th></tr></thead><tbody>';
 
         snapshot.forEach(doc => {
             const data = doc.data();
@@ -104,10 +104,10 @@ document.getElementById('add-new-btn').addEventListener('click', () => {
 
 // Cancel form
 document.getElementById('cancel-form-btn').addEventListener('click', () => {
-    showAdminPanel();
+    showEditorPanel();
 });
 document.getElementById('cancel-form-btn-2').addEventListener('click', () => {
-    showAdminPanel();
+    showEditorPanel();
 });
 
 // Reset form
@@ -206,7 +206,7 @@ async function deleteUseCase(id, title) {
         await useCasesCollection.doc(id).delete();
 
         alert('Use case deleted successfully!');
-        loadUseCasesAdmin();
+        loadUseCasesEditor();
     } catch (error) {
         console.error('Error deleting use case:', error);
         alert('Error deleting use case: ' + error.message);
@@ -310,8 +310,8 @@ document.getElementById('use-case-form').addEventListener('submit', async (e) =>
         statusEl.className = 'status-message success';
 
         setTimeout(() => {
-            showAdminPanel();
-            loadUseCasesAdmin();
+            showEditorPanel();
+            loadUseCasesEditor();
         }, 1500);
 
     } catch (error) {
