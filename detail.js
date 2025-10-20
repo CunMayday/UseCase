@@ -159,8 +159,36 @@ function displayUseCase(useCase) {
         </div>
     `;
 
+    // Add timestamps at the bottom (only for page display, not in PDF)
+    let timestampsHTML = '';
+    if (useCase.createdAt || useCase.updatedAt) {
+        timestampsHTML += '<div class="timestamps">';
+
+        if (useCase.createdAt) {
+            const createdDate = useCase.createdAt.toDate();
+            const formattedCreated = createdDate.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            timestampsHTML += `<p><strong>Created:</strong> ${formattedCreated}</p>`;
+        }
+
+        if (useCase.updatedAt) {
+            const updatedDate = useCase.updatedAt.toDate();
+            const formattedUpdated = updatedDate.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            timestampsHTML += `<p><strong>Last Modified:</strong> ${formattedUpdated}</p>`;
+        }
+
+        timestampsHTML += '</div>';
+    }
+
     // Set the content
-    document.getElementById('detail-content').innerHTML = sectionsHTML;
+    document.getElementById('detail-content').innerHTML = sectionsHTML + timestampsHTML;
 }
 
 // Helper function to convert image URL to base64

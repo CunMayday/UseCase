@@ -415,6 +415,23 @@ footer p {
     margin-bottom: 1rem;
 }
 
+.timestamps {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 2px solid var(--light-bg);
+    color: var(--gray);
+    font-size: 0.9rem;
+}
+
+.timestamps p {
+    margin: 0.5rem 0;
+}
+
+.timestamps strong {
+    color: var(--dark-gray);
+    font-weight: 600;
+}
+
 .detail-content {
     background-color: var(--white);
     border-radius: 8px;
