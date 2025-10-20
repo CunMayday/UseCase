@@ -117,6 +117,22 @@
     <script src="firebase-config.js"></script>
 
     <script>
+        // Wait for DOM and Firebase to be ready
+        let firebaseReady = false;
+
+        // Check if Firebase is initialized
+        window.addEventListener('load', () => {
+            // Give Firebase a moment to initialize
+            setTimeout(() => {
+                if (typeof db !== 'undefined' && typeof useCasesCollection !== 'undefined') {
+                    firebaseReady = true;
+                    console.log('Firebase initialized successfully');
+                } else {
+                    showStatus('Firebase initialization failed. Please refresh the page.', 'error');
+                }
+            }, 500);
+        });
+
         function showStatus(message, type) {
             const statusEl = document.getElementById('status');
             statusEl.textContent = message;
@@ -134,6 +150,11 @@
         }
 
         async function addTimestamps() {
+            if (!firebaseReady) {
+                showStatus('Firebase is not ready yet. Please wait a moment and try again.', 'error');
+                return;
+            }
+
             const button = document.getElementById('run-script');
             button.disabled = true;
             button.textContent = 'Processing...';
