@@ -5,7 +5,7 @@ let currentlyDisplayedUseCases = [];
 // Load use cases from Firebase
 async function loadUseCases() {
     try {
-        const snapshot = await useCasesCollection.orderBy('title').get();
+        const snapshot = await useCasesCollection.get();
         useCases = [];
 
         snapshot.forEach(doc => {
@@ -15,7 +15,11 @@ async function loadUseCases() {
             });
         });
 
-        displayUseCases(useCases);
+        // Apply initial sort to 'newest'
+        const sortBy = document.getElementById('sort-by').value || 'newest';
+        const sorted = sortUseCases(useCases, sortBy);
+
+        displayUseCases(sorted);
         updateResultsCount(useCases.length);
     } catch (error) {
         console.error('Error loading use cases:', error);
@@ -100,6 +104,22 @@ function sortUseCases(cases, sortBy) {
     const sorted = [...cases];
 
     switch(sortBy) {
+        case 'newest':
+            sorted.sort((a, b) => {
+                // Sort by createdAt timestamp (newest first)
+                const timeA = a.createdAt?.toMillis?.() || 0;
+                const timeB = b.createdAt?.toMillis?.() || 0;
+                return timeB - timeA; // Descending order (newest first)
+            });
+            break;
+        case 'recently-modified':
+            sorted.sort((a, b) => {
+                // Sort by updatedAt timestamp (most recently modified first)
+                const timeA = a.updatedAt?.toMillis?.() || a.createdAt?.toMillis?.() || 0;
+                const timeB = b.updatedAt?.toMillis?.() || b.createdAt?.toMillis?.() || 0;
+                return timeB - timeA; // Descending order (most recent first)
+            });
+            break;
         case 'title':
             sorted.sort((a, b) => a.title.localeCompare(b.title));
             break;
@@ -122,7 +142,12 @@ function sortUseCases(cases, sortBy) {
             });
             break;
         default:
-            // Keep default order
+            // Default to newest
+            sorted.sort((a, b) => {
+                const timeA = a.createdAt?.toMillis?.() || 0;
+                const timeB = b.createdAt?.toMillis?.() || 0;
+                return timeB - timeA;
+            });
             break;
     }
 
@@ -133,7 +158,7 @@ function sortUseCases(cases, sortBy) {
 function resetFilters() {
     document.getElementById('filter-user').value = 'all';
     document.getElementById('filter-tool').value = 'all';
-    document.getElementById('sort-by').value = 'default';
+    document.getElementById('sort-by').value = 'newest';
     filterUseCases();
 }
 

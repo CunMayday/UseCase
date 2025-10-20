@@ -91,6 +91,8 @@ This is a Firebase-powered dynamic catalog for AI tool use cases at Purdue Unive
   "submitted_by": "Name or department (optional)",
   "ai_tool": "GEM|NLM|WEBAPP",
   "for_use_by": "Faculty|Staff|Students|etc",
+  "createdAt": "Firestore Timestamp (auto-generated on creation)",
+  "updatedAt": "Firestore Timestamp (auto-updated on every edit)",
   "sections": {
     "purpose": "Purpose text",
     "instructions": "Setup instructions",

@@ -260,13 +260,20 @@ document.getElementById('use-case-form').addEventListener('submit', async (e) =>
             // Create new document to get ID
             const newDoc = await useCasesCollection.add({ temp: true });
             docId = newDoc.id;
+            // Set createdAt timestamp for new use cases
+            useCaseData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
         } else {
-            // Load existing screenshots if not uploading new ones
+            // Load existing screenshots and createdAt if not uploading new ones
             const existingDoc = await useCasesCollection.doc(docId).get();
             const existingData = existingDoc.data();
             useCaseData.sections.screenshot_setup = existingData.sections?.screenshot_setup || '';
             useCaseData.sections.screenshot_use = existingData.sections?.screenshot_use || '';
+            // Preserve original createdAt timestamp
+            useCaseData.createdAt = existingData.createdAt || firebase.firestore.FieldValue.serverTimestamp();
         }
+
+        // Always update the updatedAt timestamp
+        useCaseData.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
 
         // Upload images if provided
         const setupFile = document.getElementById('screenshot_setup').files[0];
