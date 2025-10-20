@@ -15,8 +15,8 @@ async function loadUseCases() {
             });
         });
 
-        // Apply initial sort to 'newest'
-        const sortBy = document.getElementById('sort-by').value || 'newest';
+        // Apply initial sort to 'recently-modified'
+        const sortBy = document.getElementById('sort-by').value || 'recently-modified';
         const sorted = sortUseCases(useCases, sortBy);
 
         displayUseCases(sorted);
@@ -158,7 +158,7 @@ function sortUseCases(cases, sortBy) {
 function resetFilters() {
     document.getElementById('filter-user').value = 'all';
     document.getElementById('filter-tool').value = 'all';
-    document.getElementById('sort-by').value = 'newest';
+    document.getElementById('sort-by').value = 'recently-modified';
     filterUseCases();
 }
 
