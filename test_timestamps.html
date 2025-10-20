@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Timestamp Updates</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #C28E0E;
+        }
+        button {
+            background-color: #373A36;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background-color: #000000;
+        }
+        #output {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Test Timestamp Updates</h1>
+        <p>This page will help diagnose the timestamp issue.</p>
+
+        <button onclick="testConnection()">1. Test Firebase Connection</button>
+        <button onclick="readFirstCase()">2. Read First Use Case</button>
+        <button onclick="updateFirstCaseTimestamps()">3. Update First Case with Timestamps</button>
+        <button onclick="updateAllTimestamps()">4. Update ALL Cases with Timestamps</button>
+
+        <div id="output">Ready...</div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+
+    <script>
+        // Firebase will be initialized by firebase-config.js
+        // We need to wait for the script to load
+
+        function log(message) {
+            const output = document.getElementById('output');
+            output.textContent += '\n' + new Date().toLocaleTimeString() + ': ' + message;
+            output.scrollTop = output.scrollHeight;
+        }
+
+        async function testConnection() {
+            document.getElementById('output').textContent = 'Testing connection...';
+            try {
+                log('Checking if Firebase is initialized...');
+                log('firebase exists: ' + (typeof firebase !== 'undefined'));
+
+                // Access db directly from firebase since it's initialized in firebase-config.js
+                const firestore = firebase.firestore();
+                const collection = firestore.collection('useCases');
+
+                log('✓ Got Firestore reference');
+
+                const snapshot = await collection.limit(1).get();
+                log('✓ Firebase connection works!');
+                log('Found ' + snapshot.size + ' document(s)');
+
+            } catch (error) {
+                log('✗ Error: ' + error.message);
+                console.error(error);
+            }
+        }
+
+        async function readFirstCase() {
+            try {
+                log('Reading first use case...');
+                const firestore = firebase.firestore();
+                const collection = firestore.collection('useCases');
+                const snapshot = await collection.limit(1).get();
+
+                if (snapshot.empty) {
+                    log('No use cases found!');
+                    return;
+                }
+
+                const doc = snapshot.docs[0];
+                const data = doc.data();
+
+                log('Document ID: ' + doc.id);
+                log('Title: ' + data.title);
+                log('Has createdAt: ' + (data.createdAt ? 'YES' : 'NO'));
+                log('Has updatedAt: ' + (data.updatedAt ? 'YES' : 'NO'));
+
+                if (data.createdAt) {
+                    log('createdAt type: ' + typeof data.createdAt);
+                    log('createdAt value: ' + data.createdAt);
+                }
+
+            } catch (error) {
+                log('✗ Error: ' + error.message);
+                console.error(error);
+            }
+        }
+
+        async function updateFirstCaseTimestamps() {
+            try {
+                log('Updating first use case with timestamps...');
+                const firestore = firebase.firestore();
+                const collection = firestore.collection('useCases');
+                const snapshot = await collection.limit(1).get();
+
+                if (snapshot.empty) {
+                    log('No use cases found!');
+                    return;
+                }
+
+                const doc = snapshot.docs[0];
+                log('Updating document: ' + doc.id);
+
+                // Use update() with merge to add timestamps without replacing the document
+                await collection.doc(doc.id).update({
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                log('✓ Timestamps added!');
+                log('Waiting 2 seconds for server to process...');
+
+                setTimeout(async () => {
+                    const updatedDoc = await collection.doc(doc.id).get();
+                    const data = updatedDoc.data();
+                    log('Verification:');
+                    log('  createdAt: ' + (data.createdAt ? data.createdAt.toDate() : 'MISSING'));
+                    log('  updatedAt: ' + (data.updatedAt ? data.updatedAt.toDate() : 'MISSING'));
+                }, 2000);
+
+            } catch (error) {
+                log('✗ Error: ' + error.message);
+                console.error(error);
+            }
+        }
+
+        async function updateAllTimestamps() {
+            try {
+                log('Loading all use cases...');
+                const firestore = firebase.firestore();
+                const collection = firestore.collection('useCases');
+                const snapshot = await collection.get();
+
+                log('Found ' + snapshot.size + ' use cases');
+                log('Creating batch update...');
+
+                const batch = firestore.batch();
+                const timestamp = firebase.firestore.FieldValue.serverTimestamp();
+
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    const needsUpdate = !data.createdAt || !data.updatedAt;
+
+                    if (needsUpdate) {
+                        const updates = {};
+                        if (!data.createdAt) updates.createdAt = timestamp;
+                        if (!data.updatedAt) updates.updatedAt = timestamp;
+
+                        batch.update(doc.ref, updates);
+                        log('  Will update: ' + data.title);
+                    } else {
+                        log('  Skipping: ' + data.title + ' (already has timestamps)');
+                    }
+                });
+
+                log('Committing batch update...');
+                await batch.commit();
+                log('✓ All timestamps updated!');
+                log('Check Firebase Console to verify.');
+
+            } catch (error) {
+                log('✗ Error: ' + error.message);
+                console.error(error);
+            }
+        }
+
+        // Don't auto-test - wait for user to click
+        window.addEventListener('load', () => {
+            log('Page loaded. Click "1. Test Firebase Connection" to begin.');
+        });
+    </script>
+
+    <!-- Firebase Configuration - load AFTER our script -->
+    <script src="firebase-config.js"></script>
+</body>
+</html>
