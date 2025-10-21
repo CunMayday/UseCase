@@ -321,17 +321,9 @@ async function exportFilteredToPDF() {
 
         // ==================== USE CASE PAGES ====================
 
-        // Helper function to add section
+        // Helper function to add section with proper pagination
         const addSection = (title, content, isPlaceholder = false) => {
-            let yPosition = doc.internal.getCurrentPageInfo().pageNumber > 1
-                ? doc.lastAutoTable?.finalY || 20
-                : doc.internal.pageSize.getHeight();
-
-            // Get current Y position from the last content
-            const pages = doc.internal.pages;
-            const currentPage = doc.internal.getCurrentPageInfo().pageNumber;
-
-            // Check if we need a new page
+            // Check if we need a new page before starting section
             if (doc.lastYPosition && doc.lastYPosition > 270) {
                 doc.addPage();
                 doc.lastYPosition = 20;
@@ -362,8 +354,22 @@ async function exportFilteredToPDF() {
             doc.setFontSize(10);
 
             const lines = doc.splitTextToSize(content, contentWidth);
-            doc.text(lines, margin, doc.lastYPosition);
-            doc.lastYPosition += (lines.length * 5) + 7;
+            const lineHeight = 5;
+            const maxY = 280; // Leave room for page margins
+
+            // Add lines one by one, checking for page breaks
+            for (let i = 0; i < lines.length; i++) {
+                // Check if we need a new page
+                if (doc.lastYPosition + lineHeight > maxY) {
+                    doc.addPage();
+                    doc.lastYPosition = 20;
+                }
+
+                doc.text(lines[i], margin, doc.lastYPosition);
+                doc.lastYPosition += lineHeight;
+            }
+
+            doc.lastYPosition += 7; // Add spacing after section
         };
 
         // Helper to check content
