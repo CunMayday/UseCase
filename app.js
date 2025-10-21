@@ -204,7 +204,7 @@ async function exportFilteredToPDF() {
     const button = document.getElementById('export-filtered-pdf-btn');
     const originalText = button.textContent;
     button.disabled = true;
-    button.textContent = `⏳ Generating PDF (0/${currentlyDisplayedUseCases.length})...`;
+    button.textContent = `⏳ Generating PDF...`;
 
     try {
         const { jsPDF } = window.jspdf;
@@ -222,10 +222,104 @@ async function exportFilteredToPDF() {
         const mediumGray = [102, 102, 102];
         const lightGray = [153, 153, 153];
         const white = [255, 255, 255];
+        const lightBg = [245, 245, 245];
 
         const pageWidth = 210;
+        const pageHeight = 297;
         const margin = 20;
         const contentWidth = pageWidth - (margin * 2);
+
+        // ==================== COVER PAGE ====================
+        // Tan/beige background
+        doc.setFillColor(220, 200, 170);
+        doc.rect(0, 0, pageWidth, pageHeight, 'F');
+
+        // Black sidebar on right
+        doc.setFillColor(...black);
+        doc.rect(155, 0, 55, pageHeight, 'F');
+
+        // Purdue Global text in sidebar
+        doc.setTextColor(...white);
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        doc.text('PURDUE', 162, 50);
+        doc.text('GLOBAL', 162, 56);
+
+        // Main title - black box with white text
+        doc.setFillColor(...black);
+        doc.rect(0, 120, 155, 20, 'F');
+        doc.setTextColor(...white);
+        doc.setFontSize(24);
+        doc.setFont('helvetica', 'bold');
+        doc.text('AI USE-CASE CATALOG', 10, 133);
+
+        // Subtitle
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        doc.text('Real, practical examples of AI use', 10, 155);
+
+        // Footer info
+        doc.setTextColor(...mediumGray);
+        doc.setFontSize(8);
+        doc.text(`Generated: ${new Date().toLocaleDateString()}`, 10, 280);
+        doc.text(`${currentlyDisplayedUseCases.length} use cases`, 10, 285);
+
+        // ==================== TABLE OF CONTENTS PAGE ====================
+        doc.addPage();
+
+        // Header with brown background
+        doc.setFillColor(139, 90, 43);
+        doc.rect(0, 0, pageWidth, 30, 'F');
+        doc.setTextColor(...white);
+        doc.setFontSize(18);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Contents', margin, 20);
+
+        let tocY = 50;
+        doc.setTextColor(...black);
+        doc.setFontSize(11);
+
+        // List all use cases with page numbers
+        currentlyDisplayedUseCases.forEach((useCase, index) => {
+            const pageNum = index + 3; // Page 1 is cover, page 2 is TOC, cases start at page 3
+
+            // Tool badge
+            const toolName = getToolName(useCase.ai_tool);
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(9);
+            doc.text(`[${toolName}]`, margin, tocY);
+
+            // Title
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(11);
+            const titleText = useCase.title.length > 50 ? useCase.title.substring(0, 50) + '...' : useCase.title;
+            doc.text(titleText, margin + 25, tocY);
+
+            // Page number
+            doc.setFont('helvetica', 'normal');
+            doc.text(String(pageNum), pageWidth - margin - 10, tocY);
+
+            // Dotted line
+            doc.setDrawColor(...lightGray);
+            doc.setLineWidth(0.1);
+            const dotSpacing = 2;
+            const lineY = tocY - 1;
+            const lineStartX = margin + 25 + doc.getTextWidth(titleText) + 5;
+            const lineEndX = pageWidth - margin - 15;
+            for (let x = lineStartX; x < lineEndX; x += dotSpacing) {
+                doc.circle(x, lineY, 0.2, 'F');
+            }
+
+            tocY += 8;
+
+            // Add new page if needed for TOC
+            if (tocY > 260 && index < currentlyDisplayedUseCases.length - 1) {
+                doc.addPage();
+                tocY = 30;
+            }
+        });
+
+        // ==================== USE CASE PAGES ====================
 
         // Helper function to add section
         const addSection = (title, content, isPlaceholder = false) => {
@@ -286,12 +380,10 @@ async function exportFilteredToPDF() {
             const useCase = currentlyDisplayedUseCases[i];
 
             // Update progress
-            button.textContent = `⏳ Generating PDF (${i + 1}/${currentlyDisplayedUseCases.length})...`;
+            button.textContent = `⏳ Processing ${i + 1}/${currentlyDisplayedUseCases.length}...`;
 
-            // Add page break between use cases (except for the first one)
-            if (i > 0) {
-                doc.addPage();
-            }
+            // Add page break before each use case (cover and TOC are already done)
+            doc.addPage();
 
             doc.lastYPosition = 20;
 
@@ -438,7 +530,7 @@ async function exportFilteredToPDF() {
         doc.setPage(pageCount);
         doc.setTextColor(...mediumGray);
         doc.setFontSize(8);
-        doc.text('© 2024 Purdue University Global. AI Use Case Catalog', margin, 287);
+        doc.text('© 2025 Purdue University Global. AI Use Case Catalog', margin, 287);
         doc.text(`Generated: ${new Date().toLocaleDateString()}`, pageWidth - margin - 40, 287);
 
         // Save the PDF
