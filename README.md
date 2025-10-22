@@ -1,6 +1,6 @@
 # AI Use Case Catalog
 
-A Firebase-powered dynamic catalog showcasing real, practical examples of AI tool usage at Purdue University Global. Browse use cases for Gemini Gems, Notebook LM, and Web Apps with filtering, sorting, and detailed instructions.
+A Firebase-powered dynamic catalog showcasing real, practical examples of AI tool usage. Browse use cases for Gemini Gems, Notebook LM, and Web Apps with filtering, sorting, and detailed instructions.
 
 **Live Site:** https://cunmayday.github.io/UseCase
 
@@ -14,7 +14,7 @@ A Firebase-powered dynamic catalog showcasing real, practical examples of AI too
 - **Editor Panel** - Authenticated interface for adding, editing, and deleting use cases
 - **Image Management** - Firebase Storage integration for setup and usage screenshots
 - **Responsive Design** - Optimized for desktop, tablet, and mobile viewing
-- **Purdue Branding** - Official Purdue University Global colors and styling
+- **Purdue Branding** - Official Purdue University colors and styling
 
 ## For End Users
 
@@ -140,7 +140,7 @@ service firebase.storage {
 
 ### Design Guidelines
 
-**Purdue University Global Colors:**
+**Purdue University Colors:**
 - Campus Gold: `#C28E0E` (primary highlights)
 - Athletic Gold: `#CEB888` (secondary elements)
 - Purdue Black: `#000000` (primary text)
