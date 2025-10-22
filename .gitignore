@@ -38,6 +38,11 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# Utility/maintenance scripts (one-time use)
+add_timestamps.html
+test_timestamps.html
+cleanup_orphaned_docs.html
+
 # Note: firebase-config.js is intentionally NOT ignored
 # Firebase web API keys are meant to be public
 # Security is enforced by Firebase Security Rules

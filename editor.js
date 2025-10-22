@@ -222,6 +222,10 @@ document.getElementById('use-case-form').addEventListener('submit', async (e) =>
     statusEl.textContent = 'Saving...';
     statusEl.className = 'status-message';
 
+    // Declare these outside try block so catch block can access them
+    let docId = null;
+    let isNewDocument = false;
+
     try {
         // Gather checked user types
         const selectedUserTypes = [];
@@ -255,11 +259,14 @@ document.getElementById('use-case-form').addEventListener('submit', async (e) =>
         };
 
         // Determine if adding or editing
-        let docId = editingId;
+        docId = editingId;
+        isNewDocument = false;
+
         if (!docId) {
             // Create new document to get ID
             const newDoc = await useCasesCollection.add({ temp: true });
             docId = newDoc.id;
+            isNewDocument = true;
             // Set createdAt timestamp for new use cases
             useCaseData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
         } else {
@@ -288,6 +295,11 @@ document.getElementById('use-case-form').addEventListener('submit', async (e) =>
                 statusEl.textContent = 'Error uploading setup screenshot: ' + uploadError.message;
                 statusEl.className = 'status-message error';
 
+                // Clean up temporary document if this was a new use case
+                if (isNewDocument) {
+                    await useCasesCollection.doc(docId).delete();
+                }
+
                 // Clear the file input so it doesn't persist to next edit
                 document.getElementById('screenshot_setup').value = '';
                 document.getElementById('setup-preview').innerHTML = '';
@@ -303,6 +315,11 @@ document.getElementById('use-case-form').addEventListener('submit', async (e) =>
                 console.error('Error uploading use screenshot:', uploadError);
                 statusEl.textContent = 'Error uploading use screenshot: ' + uploadError.message;
                 statusEl.className = 'status-message error';
+
+                // Clean up temporary document if this was a new use case
+                if (isNewDocument) {
+                    await useCasesCollection.doc(docId).delete();
+                }
 
                 // Clear the file input so it doesn't persist to next edit
                 document.getElementById('screenshot_use').value = '';
@@ -327,6 +344,16 @@ document.getElementById('use-case-form').addEventListener('submit', async (e) =>
         console.error('Error saving use case:', error);
         statusEl.textContent = 'Error saving: ' + error.message;
         statusEl.className = 'status-message error';
+
+        // Clean up temporary document if this was a new use case that failed
+        if (isNewDocument && docId) {
+            try {
+                await useCasesCollection.doc(docId).delete();
+                console.log('Cleaned up temporary document:', docId);
+            } catch (deleteError) {
+                console.error('Error cleaning up temporary document:', deleteError);
+            }
+        }
     }
 });
 
