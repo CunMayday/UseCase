@@ -6,6 +6,11 @@ let editingId = null;
 let pendingRemoveSetup = false;
 let pendingRemoveUse = false;
 
+// Editor sorting state
+let editorUseCases = [];
+let currentSortColumn = 'updated';
+let currentSortDirection = 'asc'; // 'asc' for updated column shows newest first
+
 // Auth state observer
 auth.onAuthStateChanged(user => {
     currentUser = user;
@@ -62,7 +67,7 @@ async function loadUseCasesEditor() {
     const listEl = document.getElementById('editor-use-cases');
 
     try {
-        const snapshot = await useCasesCollection.orderBy('title').get();
+        const snapshot = await useCasesCollection.get();
 
         if (snapshot.empty) {
             listEl.innerHTML = '<p>No use cases yet. Click "Add New Use Case" to create one.</p>';
@@ -70,32 +75,134 @@ async function loadUseCasesEditor() {
             return;
         }
 
-        let html = '<table class="editor-table"><thead><tr><th>Title</th><th>Tool</th><th>For</th><th>Actions</th></tr></thead><tbody>';
-
+        // Store use cases data
+        editorUseCases = [];
         snapshot.forEach(doc => {
-            const data = doc.data();
-            const forUseBy = Array.isArray(data.for_use_by) ? data.for_use_by.join(', ') : (data.for_use_by || 'N/A');
-            html += `
-                <tr>
-                    <td>${data.title}</td>
-                    <td>${getToolName(data.ai_tool)}</td>
-                    <td>${forUseBy}</td>
-                    <td class="actions">
-                        <button onclick="editUseCase('${doc.id}')" class="btn-small btn-edit">Edit</button>
-                        <button onclick="deleteUseCase('${doc.id}', '${data.title}')" class="btn-small btn-delete">Delete</button>
-                    </td>
-                </tr>
-            `;
+            editorUseCases.push({
+                id: doc.id,
+                ...doc.data()
+            });
         });
 
-        html += '</tbody></table>';
-        listEl.innerHTML = html;
+        // Sort and display
+        sortAndDisplayEditorUseCases();
         loadingEl.style.display = 'none';
     } catch (error) {
         console.error('Error loading use cases:', error);
         listEl.innerHTML = '<p class="error">Error loading use cases.</p>';
         loadingEl.style.display = 'none';
     }
+}
+
+// Sort and display editor use cases
+function sortAndDisplayEditorUseCases() {
+    const listEl = document.getElementById('editor-use-cases');
+
+    // Sort the data
+    const sorted = [...editorUseCases].sort((a, b) => {
+        let compareA, compareB;
+
+        switch(currentSortColumn) {
+            case 'title':
+                compareA = a.title || '';
+                compareB = b.title || '';
+                break;
+            case 'tool':
+                compareA = a.ai_tool || '';
+                compareB = b.ai_tool || '';
+                break;
+            case 'for':
+                compareA = Array.isArray(a.for_use_by) ? a.for_use_by.join(', ') : (a.for_use_by || '');
+                compareB = Array.isArray(b.for_use_by) ? b.for_use_by.join(', ') : (b.for_use_by || '');
+                break;
+            case 'updated':
+                compareA = a.updatedAt?.toMillis?.() || a.createdAt?.toMillis?.() || 0;
+                compareB = b.updatedAt?.toMillis?.() || b.createdAt?.toMillis?.() || 0;
+                // For dates, reverse the default comparison for descending
+                if (currentSortDirection === 'asc') {
+                    return compareB - compareA; // Newest first when "ascending"
+                } else {
+                    return compareA - compareB; // Oldest first when "descending"
+                }
+        }
+
+        // String comparison
+        if (typeof compareA === 'string') {
+            const result = compareA.localeCompare(compareB);
+            return currentSortDirection === 'asc' ? result : -result;
+        }
+
+        // Numeric comparison (shouldn't reach here for dates due to early return above)
+        return currentSortDirection === 'asc' ? compareA - compareB : compareB - compareA;
+    });
+
+    // Build table HTML
+    const getSortIndicator = (column) => {
+        if (currentSortColumn === column) {
+            return currentSortDirection === 'asc' ? ' ▲' : ' ▼';
+        }
+        return '';
+    };
+
+    let html = `
+        <table class="editor-table">
+            <thead>
+                <tr>
+                    <th class="sortable" onclick="sortEditorBy('title')">Title${getSortIndicator('title')}</th>
+                    <th class="sortable" onclick="sortEditorBy('tool')">Tool${getSortIndicator('tool')}</th>
+                    <th class="sortable" onclick="sortEditorBy('for')">For${getSortIndicator('for')}</th>
+                    <th class="sortable" onclick="sortEditorBy('updated')">Last Edited${getSortIndicator('updated')}</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    sorted.forEach(useCase => {
+        const forUseBy = Array.isArray(useCase.for_use_by) ? useCase.for_use_by.join(', ') : (useCase.for_use_by || 'N/A');
+
+        // Format last edited date
+        let lastEdited = 'N/A';
+        const timestamp = useCase.updatedAt || useCase.createdAt;
+        if (timestamp && timestamp.toDate) {
+            const date = timestamp.toDate();
+            lastEdited = date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+        }
+
+        html += `
+            <tr>
+                <td>${useCase.title}</td>
+                <td>${getToolName(useCase.ai_tool)}</td>
+                <td>${forUseBy}</td>
+                <td>${lastEdited}</td>
+                <td class="actions">
+                    <button onclick="editUseCase('${useCase.id}')" class="btn-small btn-edit">Edit</button>
+                    <button onclick="deleteUseCase('${useCase.id}', '${useCase.title}')" class="btn-small btn-delete">Delete</button>
+                </td>
+            </tr>
+        `;
+    });
+
+    html += '</tbody></table>';
+    listEl.innerHTML = html;
+}
+
+// Sort editor table by column
+function sortEditorBy(column) {
+    if (currentSortColumn === column) {
+        // Toggle direction if same column
+        currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+        // New column, default to ascending (or descending for dates)
+        currentSortColumn = column;
+        currentSortDirection = column === 'updated' ? 'asc' : 'asc'; // 'asc' for updated shows newest first
+    }
+
+    sortAndDisplayEditorUseCases();
 }
 
 // Add new use case
