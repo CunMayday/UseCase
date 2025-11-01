@@ -2,6 +2,10 @@
 let currentUser = null;
 let editingId = null;
 
+// Track screenshot URLs to be removed on save
+let pendingRemoveSetup = false;
+let pendingRemoveUse = false;
+
 // Auth state observer
 auth.onAuthStateChanged(user => {
     currentUser = user;
@@ -123,6 +127,14 @@ function resetForm() {
     document.getElementById('setup-preview').innerHTML = '';
     document.getElementById('use-preview').innerHTML = '';
 
+    // Hide remove buttons
+    document.getElementById('remove-setup-btn').style.display = 'none';
+    document.getElementById('remove-use-btn').style.display = 'none';
+
+    // Reset pending removal flags
+    pendingRemoveSetup = false;
+    pendingRemoveUse = false;
+
     // Clear status message
     document.getElementById('form-status').textContent = '';
     document.getElementById('form-status').className = 'status-message';
@@ -163,14 +175,24 @@ async function editUseCase(id) {
         document.getElementById('setup-preview').innerHTML = '';
         document.getElementById('use-preview').innerHTML = '';
 
+        // Reset pending removal flags
+        pendingRemoveSetup = false;
+        pendingRemoveUse = false;
+
         // Show existing screenshots
         if (data.sections?.screenshot_setup) {
             document.getElementById('setup-preview').innerHTML =
-                `<img src="${data.sections.screenshot_setup}" alt="Setup"><p>Current screenshot (upload new to replace)</p>`;
+                `<img src="${data.sections.screenshot_setup}" alt="Setup"><p>Current screenshot</p>`;
+            document.getElementById('remove-setup-btn').style.display = 'block';
+        } else {
+            document.getElementById('remove-setup-btn').style.display = 'none';
         }
         if (data.sections?.screenshot_use) {
             document.getElementById('use-preview').innerHTML =
-                `<img src="${data.sections.screenshot_use}" alt="Use"><p>Current screenshot (upload new to replace)</p>`;
+                `<img src="${data.sections.screenshot_use}" alt="Use"><p>Current screenshot</p>`;
+            document.getElementById('remove-use-btn').style.display = 'block';
+        } else {
+            document.getElementById('remove-use-btn').style.display = 'none';
         }
 
         // Clear any previous error/status messages
@@ -273,8 +295,28 @@ document.getElementById('use-case-form').addEventListener('submit', async (e) =>
             // Load existing screenshots and createdAt if not uploading new ones
             const existingDoc = await useCasesCollection.doc(docId).get();
             const existingData = existingDoc.data();
-            useCaseData.sections.screenshot_setup = existingData.sections?.screenshot_setup || '';
-            useCaseData.sections.screenshot_use = existingData.sections?.screenshot_use || '';
+
+            // Handle screenshot removal
+            if (pendingRemoveSetup) {
+                // Delete the existing screenshot from storage
+                if (existingData.sections?.screenshot_setup) {
+                    await deleteImage(existingData.sections.screenshot_setup);
+                }
+                useCaseData.sections.screenshot_setup = '';
+            } else {
+                useCaseData.sections.screenshot_setup = existingData.sections?.screenshot_setup || '';
+            }
+
+            if (pendingRemoveUse) {
+                // Delete the existing screenshot from storage
+                if (existingData.sections?.screenshot_use) {
+                    await deleteImage(existingData.sections.screenshot_use);
+                }
+                useCaseData.sections.screenshot_use = '';
+            } else {
+                useCaseData.sections.screenshot_use = existingData.sections?.screenshot_use || '';
+            }
+
             // Preserve original createdAt timestamp
             useCaseData.createdAt = existingData.createdAt || firebase.firestore.FieldValue.serverTimestamp();
         }
@@ -380,4 +422,37 @@ document.getElementById('screenshot_use').addEventListener('change', (e) => {
         };
         reader.readAsDataURL(file);
     }
+});
+
+// Remove screenshot handlers
+document.getElementById('remove-setup-btn').addEventListener('click', async () => {
+    if (!confirm('Are you sure you want to remove this screenshot? This will take effect when you save the use case.')) {
+        return;
+    }
+
+    // Mark for removal
+    pendingRemoveSetup = true;
+
+    // Clear preview and hide button
+    document.getElementById('setup-preview').innerHTML = '<p style="color: var(--gray); font-style: italic;">Screenshot marked for removal</p>';
+    document.getElementById('remove-setup-btn').style.display = 'none';
+
+    // Clear file input in case user selected a new file
+    document.getElementById('screenshot_setup').value = '';
+});
+
+document.getElementById('remove-use-btn').addEventListener('click', async () => {
+    if (!confirm('Are you sure you want to remove this screenshot? This will take effect when you save the use case.')) {
+        return;
+    }
+
+    // Mark for removal
+    pendingRemoveUse = true;
+
+    // Clear preview and hide button
+    document.getElementById('use-preview').innerHTML = '<p style="color: var(--gray); font-style: italic;">Screenshot marked for removal</p>';
+    document.getElementById('remove-use-btn').style.display = 'none';
+
+    // Clear file input in case user selected a new file
+    document.getElementById('screenshot_use').value = '';
 });

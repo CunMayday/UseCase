@@ -18,7 +18,8 @@
       "Bash(git branch -d bulk-pdf-export-feature)",
       "Bash(git push origin --delete bulk-pdf-export-feature)",
       "Bash(del \"c:\\Users\\cuneyt\\Documents\\GitHub\\UseCase\\UseCase\\GOOGLE_SIGNIN_SETUP.md\")",
-      "Bash(del PROJECT_CONTEXT.md QUICK_START.md PRODUCTION_DEPLOYMENT.md FIREBASE_MIGRATION_SUMMARY.md MULTIPLE_USER_TYPES.md PDF_EXPORT_FEATURE.md BULK_PDF_EXPORT.md)"
+      "Bash(del PROJECT_CONTEXT.md QUICK_START.md PRODUCTION_DEPLOYMENT.md FIREBASE_MIGRATION_SUMMARY.md MULTIPLE_USER_TYPES.md PDF_EXPORT_FEATURE.md BULK_PDF_EXPORT.md)",
+      "Bash(start http://localhost:8000/editor.html)"
     ],
     "deny": [],
     "ask": []
